@@ -147,14 +147,14 @@ export const HomePage: React.FC = () => {
           <CardSkeleton count={6} />
         ) : !events || events.length === 0 ? (
           <EmptyState
-            title="No Events Found in This Category"
-            description="We are preparing new sports events for this category soon. Please check back later or view all upcoming tournaments."
+            title={t('home.empty.title')}
+            description={t('home.empty.desc')}
             action={
               <button
                 onClick={() => setSelectedCategory('ALL')}
                 className="saas-button-primary text-xs py-2 px-4"
               >
-                Show All Sports
+                {t('home.empty.action')}
               </button>
             }
           />
