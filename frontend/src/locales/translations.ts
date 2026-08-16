@@ -317,6 +317,9 @@ export const translations = {
     'home.btn.organizer': 'Host an Event (Admin)',
     'home.categories.title': 'Explore Popular Events',
     'home.categories.subtitle': 'Select a sports category to filter verified open registrations',
+    'home.empty.title': 'No Events Found in This Category',
+    'home.empty.desc': 'We are preparing new sports events for this category soon. Please check back later or view all upcoming tournaments.',
+    'home.empty.action': 'Show All Sports',
 
     // Event Card & Catalog
     'card.startingFrom': 'Starting From',
