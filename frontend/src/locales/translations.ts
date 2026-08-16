@@ -29,7 +29,8 @@ export const translations = {
     'home.btn.browse': 'Lihat Semua Event',
     'home.btn.organizer': 'Buat Event (Admin)',
     'home.categories.title': 'Eksplorasi Event Populer',
-    'home.categories.subtitle': 'Pilih kategori olahraga untuk melihat pendaftaran yang sedang dibuka',
+    'home.categories.subtitle': 'Pilih kategori olahraga untuk menyaring pendaftaran terbuka yang terverifikasi',
+    'home.categories.viewAll': 'Lihat Semua Katalog',
 
     // Event Card & Catalog
     'card.startingFrom': 'Mulai Dari',
@@ -317,6 +318,7 @@ export const translations = {
     'home.btn.organizer': 'Host an Event (Admin)',
     'home.categories.title': 'Explore Popular Events',
     'home.categories.subtitle': 'Select a sports category to filter verified open registrations',
+    'home.categories.viewAll': 'View All Catalog',
     'home.empty.title': 'No Events Found in This Category',
     'home.empty.desc': 'We are preparing new sports events for this category soon. Please check back later or view all upcoming tournaments.',
     'home.empty.action': 'Show All Sports',

@@ -120,7 +120,7 @@ export const HomePage: React.FC = () => {
             </p>
           </div>
           <Link to="/events" className="text-sm font-semibold text-primary-500 hover:text-primary-400 flex items-center gap-1 shrink-0">
-            <span>View All Catalog</span>
+            <span>{t('home.categories.viewAll')}</span>
             <ChevronRight className="w-4 h-4" />
           </Link>
         </div>
