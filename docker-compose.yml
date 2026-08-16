@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: athletix_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: athletix
+      POSTGRES_USER: athletix_user
+      POSTGRES_PASSWORD: athletix_secret_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - athletix_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U athletix_user -d athletix"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  athletix_pgdata:
+    driver: local
