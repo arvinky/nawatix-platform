@@ -51,7 +51,7 @@ export const Navbar: React.FC = () => {
     return t('nav.myPortal');
   };
 
-  const navLinks = [
+  const navLinks: Array<{ label: string; path: string; isPortal?: boolean }> = [
     { label: t('nav.home'), path: '/' },
     { label: t('nav.events'), path: '/events' },
     { label: t('nav.about'), path: '/about' },

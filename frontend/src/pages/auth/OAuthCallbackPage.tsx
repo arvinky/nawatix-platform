@@ -7,7 +7,7 @@ import { axiosClient } from '../../api/axiosClient';
 export const OAuthCallbackPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { checkAuth } = useAuth();
+  const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -27,7 +27,8 @@ export const OAuthCallbackPage: React.FC = () => {
         // Ensure default axiosClient has the token
         axiosClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-        await checkAuth(); // Refreshes the auth context state (fetches user profile)
+        const profile = await axiosClient.get<any, any>('/api/auth/profile');
+        login(token, profile);
         navigate('/dashboard'); // Go to dashboard
       } catch (err: any) {
         console.error('OAuth Callback Error:', err);
@@ -38,7 +39,7 @@ export const OAuthCallbackPage: React.FC = () => {
     };
 
     processOAuth();
-  }, [searchParams, navigate, checkAuth]);
+  }, [searchParams, navigate, login]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col justify-center items-center p-6 text-center">
