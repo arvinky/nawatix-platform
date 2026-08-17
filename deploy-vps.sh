@@ -9,7 +9,7 @@ echo "============================================="
 
 # 1. Update system
 echo "Updating packages..."
-sudo apt update && sudo apt upgrade -y
+# sudo apt update && sudo apt upgrade -y
 
 # 2. Install Node.js v20
 echo "Installing Node.js v20..."
