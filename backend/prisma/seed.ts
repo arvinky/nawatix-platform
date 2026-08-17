@@ -20,13 +20,15 @@ async function main() {
 
   const saltRounds = 10;
   const defaultPasswordHash = await bcrypt.hash('12345678', saltRounds);
+  const superAdminPasswordHash = await bcrypt.hash('superadmin15', saltRounds);
+  const adminPasswordHash = await bcrypt.hash('nawatix15', saltRounds);
 
   // 1. Create Super Admin
   const admin = await prisma.user.create({
     data: {
       name: 'Super Admin 15',
       email: 'superadmin15@gmail.com',
-      password: defaultPasswordHash,
+      password: superAdminPasswordHash,
       role: UserRole.SUPER_ADMIN,
       phone: '+628111222333',
       avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
@@ -37,9 +39,9 @@ async function main() {
   // 2. Create 3 Admin Accounts (formerly Organizer)
   const organizer1 = await prisma.user.create({
     data: {
-      name: 'Admin 15',
-      email: 'admin15@gmail.com',
-      password: defaultPasswordHash,
+      name: 'Admin Nawatix',
+      email: 'admin@nawatix.com',
+      password: adminPasswordHash,
       role: UserRole.ADMIN,
       phone: '+6281234567890',
       organizationName: 'Admin 15 Organizer',

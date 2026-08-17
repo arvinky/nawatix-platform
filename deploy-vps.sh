@@ -65,7 +65,7 @@ npm run build
 echo "Starting Backend with PM2..."
 pm2 stop nawatix-api || true
 pm2 delete nawatix-api || true
-pm2 start dist/main.js --name nawatix-api
+pm2 start dist/src/main.js --name nawatix-api
 pm2 save
 sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u $USER --hp $HOME || true
 
