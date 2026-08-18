@@ -362,6 +362,12 @@ export const CheckoutPage: React.FC = () => {
                 </div>
               ))}
             </div>
+            {selectedPaymentMethod === t('checkout.method.qris.name') && (
+              <div className="mt-4 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center space-y-3 shadow-sm">
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400">Scan QRIS ini untuk membayar</p>
+                <img src="/qris.jpg" alt="QRIS Nawatix" className="max-w-[250px] w-full h-auto rounded-lg" />
+              </div>
+            )}
           </div>
 
           <div className="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
