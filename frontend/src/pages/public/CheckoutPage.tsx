@@ -398,7 +398,7 @@ export const CheckoutPage: React.FC = () => {
               ) : (
                 <>
                   <CheckCircle2 className="w-4 h-4 text-emerald-300" />
-                  <span>{selectedPaymentMethod === t('checkout.method.qris.name') ? 'Saya Sudah Transfer' : t('checkout.modal.pay')}</span>
+                  <span>{selectedPaymentMethod === t('checkout.method.qris.name') ? 'Saya Sudah Melakukan Pembayaran' : t('checkout.modal.pay')}</span>
                 </>
               )}
             </button>
