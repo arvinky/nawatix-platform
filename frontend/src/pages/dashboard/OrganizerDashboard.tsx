@@ -69,7 +69,7 @@ export const OrganizerDashboard: React.FC = () => {
   const { t, language } = useLanguage();
   const queryClient = useQueryClient();
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'events' | 'participants' | 'checkin' | 'reports'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'events' | 'orders' | 'participants' | 'checkin' | 'reports'>('overview');
   const [isNewEventModalOpen, setIsNewEventModalOpen] = useState<boolean>(false);
   const [selectedEventForTicket, setSelectedEventForTicket] = useState<string | null>(null);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
@@ -97,6 +97,12 @@ export const OrganizerDashboard: React.FC = () => {
     queryKey: ['orgParticipants'],
     queryFn: async () => axiosClient.get('/api/registration/participants'),
     enabled: activeTab === 'participants',
+  });
+
+  const { data: orders, isLoading: isLoadingOrders } = useQuery<any[]>({
+    queryKey: ['orgOrders'],
+    queryFn: async () => axiosClient.get('/api/orders/manage'),
+    enabled: activeTab === 'orders',
   });
 
   // Create Event form
@@ -251,6 +257,19 @@ export const OrganizerDashboard: React.FC = () => {
     }
   };
 
+  const handleApprovePayment = async (orderId: string) => {
+    if (!window.confirm('Verifikasi pembayaran ini? Tiket akan otomatis diterbitkan.')) return;
+    try {
+      showToast('Memverifikasi pembayaran...', 'info');
+      await axiosClient.post(`/api/payments/simulate-success/${orderId}`);
+      showToast('Pembayaran berhasil diverifikasi!', 'success');
+      queryClient.invalidateQueries({ queryKey: ['orgOrders'] });
+      queryClient.invalidateQueries({ queryKey: ['orgStats'] });
+    } catch (err: any) {
+      showToast(err.displayMessage || 'Gagal memverifikasi pembayaran', 'error');
+    }
+  };
+
   const yAxisFormatter = (val: number) => {
     if (val === 0) return 'Rp0';
     if (language === 'id') {
@@ -291,6 +310,7 @@ export const OrganizerDashboard: React.FC = () => {
         {[
           { id: 'overview', label: t('org.tab.overview'), icon: BarChart3 },
           { id: 'events', label: t('org.tab.events'), icon: Calendar },
+          { id: 'orders', label: 'Transactions', icon: DollarSign },
           { id: 'checkin', label: t('org.tab.checkin'), icon: QrCode, badge: t('org.badge.raceDay') },
           { id: 'participants', label: t('org.tab.participants'), icon: Users },
           { id: 'reports', label: t('org.tab.reports'), icon: Download },
@@ -639,6 +659,70 @@ export const OrganizerDashboard: React.FC = () => {
             </table>
           </div>
         ))}
+
+      {/* TAB 6: TRANSACTIONS & APPROVALS */}
+      {activeTab === 'orders' && (
+        isLoadingOrders ? (
+          <TableSkeleton rows={8} cols={6} />
+        ) : !orders || orders.length === 0 ? (
+          <EmptyState title="No Transactions" description="Belum ada transaksi yang masuk." />
+        ) : (
+          <div className="saas-card overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 dark:border-slate-800 text-[11px] uppercase font-bold text-slate-400 bg-slate-50/50 dark:bg-slate-900/50">
+                  <th className="py-4 px-6">Invoice / Date</th>
+                  <th className="py-4 px-6">Participant</th>
+                  <th className="py-4 px-6">Event & Tier</th>
+                  <th className="py-4 px-6">Amount</th>
+                  <th className="py-4 px-6">Status</th>
+                  <th className="py-4 px-6 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80 text-sm">
+                {orders.map((o) => (
+                  <tr key={o.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30">
+                    <td className="py-4 px-6">
+                      <div className="font-mono font-extrabold text-primary-500">{o.invoice}</div>
+                      <div className="text-xs text-slate-400">{new Date(o.createdAt).toLocaleString()}</div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="font-bold text-slate-900 dark:text-white">{o.user?.name || '-'}</div>
+                      <div className="text-xs text-slate-400">{o.user?.email || '-'}</div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="font-medium text-slate-700 dark:text-slate-300">{o.event?.name}</div>
+                      <div className="text-[11px] text-slate-500">{o.ticketCategory?.name}</div>
+                    </td>
+                    <td className="py-4 px-6 font-extrabold text-slate-900 dark:text-white">
+                      Rp {o.total.toLocaleString('id-ID')}
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className={`px-2.5 py-1 rounded-md text-[11px] font-extrabold uppercase ${
+                        o.status === 'PAID' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'
+                      }`}>
+                        {o.status}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6 text-right">
+                      {o.status === 'PENDING' ? (
+                        <button
+                          onClick={() => handleApprovePayment(o.id)}
+                          className="saas-button-primary bg-emerald-600 hover:bg-emerald-500 text-xs py-1.5 px-3"
+                        >
+                          Approve
+                        </button>
+                      ) : (
+                        <span className="text-xs text-slate-400">-</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      )}
 
       {/* TAB 5: DATA EXPORTS & REPORTS */}
       {activeTab === 'reports' && (

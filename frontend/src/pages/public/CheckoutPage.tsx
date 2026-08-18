@@ -126,6 +126,14 @@ export const CheckoutPage: React.FC = () => {
 
   const handleSimulatePaymentSuccess = async () => {
     if (!createdOrderId) return;
+
+    if (selectedPaymentMethod === t('checkout.method.qris.name')) {
+      showToast('Mohon tunggu verifikasi pembayaran dari Admin.', 'info');
+      setIsSimulatedModalOpen(false);
+      navigate(`/order-success/${createdOrderId}`);
+      return;
+    }
+
     setIsProcessingPayment(true);
     try {
       await axiosClient.post(`/api/payments/simulate-success/${createdOrderId}`);
@@ -390,7 +398,7 @@ export const CheckoutPage: React.FC = () => {
               ) : (
                 <>
                   <CheckCircle2 className="w-4 h-4 text-emerald-300" />
-                  <span>{t('checkout.modal.pay')}</span>
+                  <span>{selectedPaymentMethod === t('checkout.method.qris.name') ? 'Saya Sudah Transfer' : t('checkout.modal.pay')}</span>
                 </>
               )}
             </button>
