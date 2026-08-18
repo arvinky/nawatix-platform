@@ -160,6 +160,20 @@ export class OrdersService {
     return order;
   }
 
+  async removeOrder(id: string, currentUser: { id: string; role: UserRole }) {
+    const order = await this.prisma.order.findUnique({
+      where: { id },
+      include: { event: true },
+    });
+    if (!order) {
+      throw new NotFoundException('Order not found.');
+    }
+    if (currentUser.role === UserRole.ADMIN && order.event.organizerId !== currentUser.id) {
+      throw new ForbiddenException('You cannot delete an order for an event you do not manage.');
+    }
+    return this.prisma.order.delete({ where: { id } });
+  }
+
   private async generateInvoiceNumber(): Promise<string> {
     const year = new Date().getFullYear();
     const prefix = `INV-${year}`;

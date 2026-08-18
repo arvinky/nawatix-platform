@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Query, Delete } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/orders.dto';
@@ -42,5 +42,13 @@ export class OrdersController {
   @ApiOperation({ summary: 'Get details of specific order and participant status' })
   async findOne(@Param('id') id: string, @CurrentUser() user: any) {
     return this.ordersService.findOne(id, user);
+  }
+
+  @Delete(':id')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Admin/Organizer: Delete an order and its related records' })
+  async remove(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.ordersService.removeOrder(id, user);
   }
 }

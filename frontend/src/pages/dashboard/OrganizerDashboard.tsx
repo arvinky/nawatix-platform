@@ -265,8 +265,23 @@ export const OrganizerDashboard: React.FC = () => {
       showToast('Pembayaran berhasil diverifikasi!', 'success');
       queryClient.invalidateQueries({ queryKey: ['orgOrders'] });
       queryClient.invalidateQueries({ queryKey: ['orgStats'] });
+      queryClient.invalidateQueries({ queryKey: ['orgParticipants'] });
     } catch (err: any) {
       showToast(err.displayMessage || 'Gagal memverifikasi pembayaran', 'error');
+    }
+  };
+
+  const handleDeleteTransaction = async (orderId: string) => {
+    if (!window.confirm('Are you sure you want to delete this transaction? This will also remove the participant and any generated tickets.')) return;
+    try {
+      showToast('Deleting transaction...', 'info');
+      await axiosClient.delete(`/api/orders/${orderId}`);
+      showToast('Transaction deleted successfully!', 'success');
+      queryClient.invalidateQueries({ queryKey: ['orgOrders'] });
+      queryClient.invalidateQueries({ queryKey: ['orgStats'] });
+      queryClient.invalidateQueries({ queryKey: ['orgParticipants'] });
+    } catch (err: any) {
+      showToast(err.displayMessage || 'Failed to delete transaction', 'error');
     }
   };
 
@@ -705,16 +720,23 @@ export const OrganizerDashboard: React.FC = () => {
                       </span>
                     </td>
                     <td className="py-4 px-6 text-right">
-                      {o.status === 'PENDING' ? (
+                      <div className="flex items-center justify-end gap-3">
+                        {o.status === 'PENDING' && (
+                          <button
+                            onClick={() => handleApprovePayment(o.id)}
+                            className="saas-button-primary bg-emerald-600 hover:bg-emerald-500 text-xs py-1.5 px-3"
+                          >
+                            Approve
+                          </button>
+                        )}
                         <button
-                          onClick={() => handleApprovePayment(o.id)}
-                          className="saas-button-primary bg-emerald-600 hover:bg-emerald-500 text-xs py-1.5 px-3"
+                          onClick={() => handleDeleteTransaction(o.id)}
+                          className="text-rose-500 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-500/10 transition-colors"
+                          title="Delete Transaction"
                         >
-                          Approve
+                          <Trash2 className="w-4 h-4" />
                         </button>
-                      ) : (
-                        <span className="text-xs text-slate-400">-</span>
-                      )}
+                      </div>
                     </td>
                   </tr>
                 ))}
