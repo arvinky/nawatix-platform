@@ -49,8 +49,14 @@ export class PaymentsService {
 
     // Format phone number to numeric only for Doku
     let formattedPhone = order.user.phone ? order.user.phone.replace(/[^0-9]/g, '') : '0810000000';
+    if (!formattedPhone) {
+      formattedPhone = '0810000000';
+    }
     if (formattedPhone.startsWith('62')) {
       formattedPhone = '0' + formattedPhone.substring(2);
+    }
+    if (formattedPhone.length > 20) {
+      formattedPhone = formattedPhone.substring(0, 20);
     }
     
     const requestBody = {
