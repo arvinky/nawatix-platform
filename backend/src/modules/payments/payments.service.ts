@@ -43,10 +43,16 @@ export class PaymentsService {
       this.logger.log(`Simulation mode active for Invoice ${order.invoice}. Returning simulated Doku URL.`);
       return {
         snapToken: `SIM_DOKU_TOKEN_${order.invoice}_${Date.now()}`,
-        redirectUrl: `http://localhost:5173/payment-simulator/${order.id}`,
+        redirectUrl: `${this.configService.get<string>('FRONTEND_URL')}/order-success/${order.id}`,
       };
     }
 
+    // Format phone number to numeric only for Doku
+    let formattedPhone = order.user.phone ? order.user.phone.replace(/[^0-9]/g, '') : '0810000000';
+    if (formattedPhone.startsWith('62')) {
+      formattedPhone = '0' + formattedPhone.substring(2);
+    }
+    
     const requestBody = {
       order: {
         amount: Math.round(order.total),
@@ -59,7 +65,7 @@ export class PaymentsService {
       customer: {
         name: order.user.name,
         email: order.user.email,
-        phone: order.user.phone || '0810000000',
+        phone: formattedPhone,
       }
     };
 
@@ -83,11 +89,8 @@ export class PaymentsService {
         redirectUrl: response.data?.response?.payment?.url || `http://localhost:5173/payment-simulator/${order.id}`,
       };
     } catch (error: any) {
-      this.logger.error('Doku API error, falling back to Simulation mode:', error.response?.data || error.message);
-      return {
-        snapToken: `SIM_DOKU_TOKEN_${order.invoice}`,
-        redirectUrl: `http://localhost:5173/payment-simulator/${order.id}`,
-      };
+      this.logger.error('Doku API error:', error.response?.data || error.message);
+      throw new BadRequestException('Failed to initialize payment gateway: ' + (error.response?.data?.message?.[0] || 'Unknown error'));
     }
   }
 
