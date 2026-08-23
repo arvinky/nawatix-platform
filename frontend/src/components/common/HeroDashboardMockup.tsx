@@ -1,20 +1,24 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { Activity, CreditCard, Users, CheckCircle2, MoreHorizontal, Filter } from 'lucide-react';
 
 const mockChartData = [
-  { name: 'Mon', participants: 400 },
-  { name: 'Tue', participants: 800 },
-  { name: 'Wed', participants: 1200 },
-  { name: 'Thu', participants: 1500 },
-  { name: 'Fri', participants: 2300 },
-  { name: 'Sat', participants: 3200 },
-  { name: 'Sun', participants: 4281 },
+  { name: 'Apr', participants: 420 },
+  { name: 'May', participants: 780 },
+  { name: 'Jun', participants: 1240 },
+  { name: 'Jul', participants: 2890 },
+  { name: 'Aug', participants: 4281 },
 ];
 
 export const HeroDashboardMockup: React.FC = () => {
   return (
-    <div className="w-full h-full bg-surface-light dark:bg-[#151515] rounded-[16px] border border-border-light dark:border-border-dark shadow-elevation overflow-hidden flex flex-col font-sans select-none pointer-events-none">
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.98, y: 16 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="w-full h-full bg-surface-light dark:bg-[#151515] rounded-[16px] border border-border-light dark:border-border-dark shadow-elevation overflow-hidden flex flex-col font-sans select-none pointer-events-none"
+    >
       
       {/* Top Navbar */}
       <div className="h-12 border-b border-border-light dark:border-border-dark flex items-center justify-between px-4 bg-background-light dark:bg-[#111111]">
@@ -44,7 +48,10 @@ export const HeroDashboardMockup: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-[18px] font-semibold dark:text-white">EVENT OVERVIEW</h2>
-            <p className="text-[13px] text-text-secondary mt-0.5">Jakarta City Run 2026</p>
+            <div className="flex items-center gap-2 mt-0.5">
+              <p className="text-[13px] text-text-secondary">Madiun City Run 2026</p>
+              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-accent-emerald/10 text-accent-emerald">Active</span>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <div className="px-3 py-1.5 rounded-md border border-border-light dark:border-border-dark text-[12px] font-medium flex items-center gap-1.5 text-text-primary dark:text-text-darkPrimary">
@@ -56,34 +63,34 @@ export const HeroDashboardMockup: React.FC = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-4 gap-4">
-          <div className="p-4 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-[#111111]">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.6 }} className="p-4 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-[#111111]">
             <div className="flex items-center gap-2 text-text-secondary text-[12px] font-medium mb-2">
               <Users className="w-4 h-4" /> Participants
             </div>
             <div className="text-[24px] font-semibold dark:text-white">4,281</div>
-            <div className="text-[11px] text-accent-emerald mt-1 font-medium">+12% from last week</div>
-          </div>
-          <div className="p-4 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-[#111111]">
+            <div className="text-[11px] text-accent-emerald mt-1 font-medium">Capacity: 4,500</div>
+          </motion.div>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6 }} className="p-4 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-[#111111]">
             <div className="flex items-center gap-2 text-text-secondary text-[12px] font-medium mb-2">
               <CreditCard className="w-4 h-4" /> Revenue
             </div>
-            <div className="text-[24px] font-semibold dark:text-white">Rp 824M</div>
-            <div className="text-[11px] text-accent-emerald mt-1 font-medium">+8% from last week</div>
-          </div>
-          <div className="p-4 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-[#111111]">
+            <div className="text-[24px] font-semibold dark:text-white">Rp824,5M</div>
+            <div className="text-[11px] text-accent-emerald mt-1 font-medium">+14% this month</div>
+          </motion.div>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.6 }} className="p-4 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-[#111111]">
             <div className="flex items-center gap-2 text-text-secondary text-[12px] font-medium mb-2">
               <Activity className="w-4 h-4" /> Registration
             </div>
             <div className="text-[24px] font-semibold dark:text-white">87%</div>
-            <div className="text-[11px] text-text-muted mt-1 font-medium">Capacity: 5,000</div>
-          </div>
-          <div className="p-4 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-[#111111]">
+            <div className="text-[11px] text-text-muted mt-1 font-medium">Active progress</div>
+          </motion.div>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.6 }} className="p-4 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-[#111111]">
             <div className="flex items-center gap-2 text-text-secondary text-[12px] font-medium mb-2">
               <CheckCircle2 className="w-4 h-4" /> Check-in
             </div>
             <div className="text-[24px] font-semibold dark:text-white">3,942</div>
-            <div className="text-[11px] text-text-muted mt-1 font-medium">92% of total</div>
-          </div>
+            <div className="text-[11px] text-text-muted mt-1 font-medium">87.6% rate</div>
+          </motion.div>
         </div>
 
         {/* Chart & Activity */}
@@ -101,7 +108,7 @@ export const HeroDashboardMockup: React.FC = () => {
                   </defs>
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#8A8A86' }} dy={10} />
                   <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #E5E5E2', fontSize: '12px', padding: '4px 8px' }} />
-                  <Area type="monotone" dataKey="participants" stroke="#FF6B00" strokeWidth={2} fillOpacity={1} fill="url(#colorParticipants)" />
+                  <Area isAnimationActive={true} animationDuration={1200} type="monotone" dataKey="participants" stroke="#FF6B00" strokeWidth={2} fillOpacity={1} fill="url(#colorParticipants)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -113,14 +120,14 @@ export const HeroDashboardMockup: React.FC = () => {
             </div>
             <div className="space-y-4 flex-1 overflow-hidden">
               {[
-                { name: 'Budi Santoso', action: 'registered for', event: '10K Men', time: '2m ago' },
-                { name: 'Siti Rahma', action: 'completed payment', event: '#INV-8912', time: '14m ago' },
-                { name: 'Andi Wijaya', action: 'checked in at', event: 'Gate 4', time: '1h ago' },
-                { name: 'Diana Fitri', action: 'registered for', event: '5K Women', time: '2h ago' },
+                { name: 'REG-48217', action: 'verified', event: 'BIB A4217', time: '08:39' },
+                { name: 'REG-48204', action: 'completed', event: 'Registration', time: '08:35' },
+                { name: 'TXN-8F42K', action: 'received', event: 'Payment', time: '08:31' },
+                { name: 'REG-48196', action: 'completed', event: 'Registration', time: '08:27' },
               ].map((activity, i) => (
                 <div key={i} className="flex gap-3 items-start">
                   <div className="w-6 h-6 rounded-full bg-surface-hoverLight dark:bg-surface-hoverDark flex items-center justify-center shrink-0 border border-border-light dark:border-border-dark">
-                    <span className="text-[9px] font-semibold text-text-secondary">{activity.name.charAt(0)}</span>
+                    <span className="text-[9px] font-semibold text-text-secondary">{activity.name.charAt(4)}</span>
                   </div>
                   <div>
                     <p className="text-[12px] leading-tight dark:text-text-darkPrimary">
@@ -134,6 +141,6 @@ export const HeroDashboardMockup: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };

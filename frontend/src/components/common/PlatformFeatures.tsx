@@ -1,28 +1,24 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { motion, useAnimation, useInView } from 'framer-motion';
 import { Users, CreditCard, Ticket, CheckCircle2, QrCode } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
-import { useQuery } from '@tanstack/react-query';
-import { axiosClient } from '../../api/axiosClient';
-import { Event } from '../../types';
+
+const ProgressBar = ({ targetPercentage }: { targetPercentage: number }) => {
+  return (
+    <div className="h-2 w-full bg-surface-hoverLight dark:bg-surface-hoverDark rounded-full overflow-hidden">
+      <motion.div 
+        initial={{ width: 0 }}
+        whileInView={{ width: `${targetPercentage}%` }}
+        transition={{ duration: 1, ease: "easeOut" }}
+        viewport={{ once: true }}
+        className={`h-full rounded-full ${targetPercentage >= 100 ? 'bg-border-dark dark:bg-border-light' : 'bg-primary-500'}`} 
+      />
+    </div>
+  );
+};
 
 export const PlatformFeatures: React.FC = () => {
   const { t } = useLanguage();
-  
-  const { data: events } = useQuery<Event[]>({
-    queryKey: ['events-mockup'],
-    queryFn: async () => {
-      const response = await axiosClient.get('/api/events');
-      return response.data;
-    },
-  });
-
-  const featuredEvent = events && events.length > 0 ? events[0] : null;
-  const ticketCategories = featuredEvent?.ticketCategories || [
-    { name: '5K Fun Run', totalQuota: 1000, totalSold: 1000 },
-    { name: '10K Challenge', totalQuota: 2000, totalSold: 1850 },
-    { name: '21K Half Marathon', totalQuota: 1500, totalSold: 1431 },
-  ];
   return (
     <div className="bg-background-light dark:bg-background-dark">
       
@@ -42,30 +38,27 @@ export const PlatformFeatures: React.FC = () => {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center mb-6">
                     <div>
-                      <h4 className="font-semibold dark:text-white max-w-[200px] truncate" title={featuredEvent?.name || 'Jakarta City Run 2026'}>
-                        {featuredEvent?.name || 'Jakarta City Run 2026'}
-                      </h4>
+                      <h4 className="font-semibold dark:text-white max-w-[200px] truncate">Madiun City Run 2026</h4>
                       <p className="text-[13px] text-text-secondary">{t('mockup.reg.status')}</p>
                     </div>
-                    <span className="px-2.5 py-1 rounded-md bg-accent-emerald/10 text-accent-emerald text-[12px] font-semibold">{t('mockup.reg.active')}</span>
+                    <span className="px-2.5 py-1 rounded-md bg-accent-emerald/10 text-accent-emerald text-[12px] font-semibold">Active</span>
                   </div>
                   {/* Category bars */}
-                  {ticketCategories.slice(0,3).map((cat: any) => {
-                    const sold = cat.totalSold || cat.sold || 0;
-                    const total = cat.totalQuota || cat.quota || cat.total || 0;
+                  {[
+                    { name: '5K Fun Run', total: 1000, sold: 1000 },
+                    { name: '10K Challenge', total: 2000, sold: 1850 },
+                    { name: '21K Half Marathon', total: 1500, sold: 1431 },
+                  ].map((cat: any) => {
+                    const sold = cat.sold;
+                    const total = cat.total;
                     const percentage = total > 0 ? (sold / total) * 100 : 0;
                     return (
-                      <div key={cat.name || cat.id} className="space-y-2">
+                      <div key={cat.name} className="space-y-2">
                         <div className="flex justify-between text-[13px]">
                           <span className="font-medium dark:text-white">{cat.name}</span>
-                          <span className="text-text-secondary">{sold} / {total}</span>
+                          <span className="text-text-secondary">{sold.toLocaleString()} / {total.toLocaleString()}</span>
                         </div>
-                        <div className="h-2 w-full bg-surface-hoverLight dark:bg-surface-hoverDark rounded-full overflow-hidden">
-                          <div 
-                            className={`h-full rounded-full ${sold >= total && total > 0 ? 'bg-border-dark dark:bg-border-light' : 'bg-primary-500'}`} 
-                            style={{ width: `${percentage}%` }}
-                          />
-                        </div>
+                        <ProgressBar targetPercentage={percentage} />
                       </div>
                     );
                   })}
@@ -98,11 +91,11 @@ export const PlatformFeatures: React.FC = () => {
                 <div className="p-5 space-y-4 text-[13px]">
                   <div className="flex justify-between">
                     <span className="text-text-secondary">{t('mockup.pay.participant')}</span>
-                    <span className="font-medium dark:text-white">Arvin Danuarta</span>
+                    <span className="font-medium dark:text-white">REG-48217</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-text-secondary">{t('mockup.pay.category')}</span>
-                    <span className="font-medium dark:text-white">10K Men</span>
+                    <span className="font-medium dark:text-white">10K Challenge</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-text-secondary">{t('mockup.pay.method')}</span>
@@ -143,11 +136,11 @@ export const PlatformFeatures: React.FC = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
               <div>
                 <p className="text-[12px] text-[#A1A1AA] mb-1">{t('mockup.race.participant')}</p>
-                <p className="font-semibold text-[15px]">Arvin Danuarta</p>
+                <p className="font-semibold text-[15px]">Participant #A4217</p>
               </div>
               <div>
                 <p className="text-[12px] text-[#A1A1AA] mb-1">{t('mockup.race.category')}</p>
-                <p className="font-semibold text-[15px]">10K Men</p>
+                <p className="font-semibold text-[15px]">10K Challenge</p>
               </div>
               <div>
                 <p className="text-[12px] text-[#A1A1AA] mb-1">{t('mockup.race.bib')}</p>
@@ -156,7 +149,7 @@ export const PlatformFeatures: React.FC = () => {
               <div>
                 <p className="text-[12px] text-[#A1A1AA] mb-1">{t('mockup.race.status')}</p>
                 <span className="inline-flex px-2 py-0.5 rounded text-[11px] font-bold bg-[#10B981]/20 text-[#10B981]">
-                  {t('mockup.race.verified')}
+                  VERIFIED
                 </span>
               </div>
             </div>
@@ -167,7 +160,13 @@ export const PlatformFeatures: React.FC = () => {
                 <span className="font-medium">3,942 / 4,500</span>
               </div>
               <div className="h-1.5 w-full bg-[#222222] rounded-full overflow-hidden">
-                <div className="h-full bg-primary-500 w-[87%] rounded-full"></div>
+                <motion.div 
+                  initial={{ width: 0 }}
+                  whileInView={{ width: '87.6%' }}
+                  transition={{ duration: 1.2, ease: "easeOut" }}
+                  viewport={{ once: true }}
+                  className="h-full bg-primary-500 rounded-full"
+                />
               </div>
             </div>
           </div>
