@@ -2,9 +2,27 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Users, CreditCard, Ticket, CheckCircle2, QrCode } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { useQuery } from '@tanstack/react-query';
+import { axiosClient } from '../../api/axiosClient';
+import { Event } from '../../types';
 
 export const PlatformFeatures: React.FC = () => {
   const { t } = useLanguage();
+  
+  const { data: events } = useQuery<Event[]>({
+    queryKey: ['events-mockup'],
+    queryFn: async () => {
+      const response = await axiosClient.get('/api/events');
+      return response.data;
+    },
+  });
+
+  const featuredEvent = events && events.length > 0 ? events[0] : null;
+  const ticketCategories = featuredEvent?.ticketCategories || [
+    { name: '5K Fun Run', totalQuota: 1000, totalSold: 1000 },
+    { name: '10K Challenge', totalQuota: 2000, totalSold: 1850 },
+    { name: '21K Half Marathon', totalQuota: 1500, totalSold: 1431 },
+  ];
   return (
     <div className="bg-background-light dark:bg-background-dark">
       
@@ -24,30 +42,33 @@ export const PlatformFeatures: React.FC = () => {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center mb-6">
                     <div>
-                      <h4 className="font-semibold dark:text-white">Jakarta City Run 2026</h4>
+                      <h4 className="font-semibold dark:text-white max-w-[200px] truncate" title={featuredEvent?.name || 'Jakarta City Run 2026'}>
+                        {featuredEvent?.name || 'Jakarta City Run 2026'}
+                      </h4>
                       <p className="text-[13px] text-text-secondary">{t('mockup.reg.status')}</p>
                     </div>
                     <span className="px-2.5 py-1 rounded-md bg-accent-emerald/10 text-accent-emerald text-[12px] font-semibold">{t('mockup.reg.active')}</span>
                   </div>
                   {/* Category bars */}
-                  {[
-                    { name: '5K Fun Run', total: 1000, sold: 1000, status: 'Sold Out' },
-                    { name: '10K Challenge', total: 2000, sold: 1850, status: '92% Full' },
-                    { name: '21K Half Marathon', total: 1500, sold: 1431, status: '95% Full' },
-                  ].map((cat) => (
-                    <div key={cat.name} className="space-y-2">
-                      <div className="flex justify-between text-[13px]">
-                        <span className="font-medium dark:text-white">{cat.name}</span>
-                        <span className="text-text-secondary">{cat.sold} / {cat.total}</span>
+                  {ticketCategories.slice(0,3).map((cat: any) => {
+                    const sold = cat.totalSold || cat.sold || 0;
+                    const total = cat.totalQuota || cat.quota || cat.total || 0;
+                    const percentage = total > 0 ? (sold / total) * 100 : 0;
+                    return (
+                      <div key={cat.name || cat.id} className="space-y-2">
+                        <div className="flex justify-between text-[13px]">
+                          <span className="font-medium dark:text-white">{cat.name}</span>
+                          <span className="text-text-secondary">{sold} / {total}</span>
+                        </div>
+                        <div className="h-2 w-full bg-surface-hoverLight dark:bg-surface-hoverDark rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full rounded-full ${sold >= total && total > 0 ? 'bg-border-dark dark:bg-border-light' : 'bg-primary-500'}`} 
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
                       </div>
-                      <div className="h-2 w-full bg-surface-hoverLight dark:bg-surface-hoverDark rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full rounded-full ${cat.sold === cat.total ? 'bg-border-dark dark:bg-border-light' : 'bg-primary-500'}`} 
-                          style={{ width: `${(cat.sold/cat.total)*100}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
