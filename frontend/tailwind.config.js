@@ -9,18 +9,30 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        heading: ['Oswald', 'sans-serif'],
+        heading: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
       },
       colors: {
         background: {
-          light: '#F9FAFB',
-          dark: '#000000',
+          light: '#F7F7F5',
+          dark: '#111111',
+          subtle: '#EFEFED',
         },
         surface: {
           light: '#FFFFFF',
-          dark: '#111111',
+          dark: '#181818',
           hoverLight: '#F3F4F6',
           hoverDark: '#222222',
+        },
+        border: {
+          light: '#E5E5E2',
+          dark: '#333333',
+        },
+        text: {
+          primary: '#111111',
+          secondary: '#6B6B6B',
+          muted: '#8A8A86',
+          darkPrimary: '#FFFFFF',
+          darkSecondary: '#A1A1AA',
         },
         primary: {
           50: '#FFF7ED',
@@ -28,20 +40,16 @@ export default {
           500: '#FF6B00',
           600: '#E66000',
           700: '#CC5500',
-          glow: '#FF8533',
         },
         accent: {
-          500: '#F8F9FB',
-          600: '#E2E8F0',
           emerald: '#10B981',
           rose: '#F43F5E',
           amber: '#F59E0B',
         },
       },
       boxShadow: {
-        'saas': '0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -2px rgba(0, 0, 0, 0.04)',
-        'saas-dark': '0 4px 25px -2px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.08)',
-        'glow': '0 0 25px -5px rgba(255, 107, 0, 0.4)',
+        'saas': '0 4px 20px -2px rgba(0, 0, 0, 0.03), 0 1px 3px -1px rgba(0, 0, 0, 0.02)',
+        'elevation': '0 10px 40px rgba(0,0,0,0.06)',
       },
       borderRadius: {
         'xl': '0.75rem',

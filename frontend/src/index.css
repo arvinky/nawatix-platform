@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Oswald:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,34 +6,33 @@
 
 @layer base {
   body {
-    @apply bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 font-sans antialiased transition-colors duration-200 selection:bg-primary-500 selection:text-white;
+    @apply bg-background-light dark:bg-background-dark text-text-primary dark:text-text-darkPrimary font-sans antialiased transition-colors duration-200 selection:bg-primary-500 selection:text-white;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-bold;
-    font-family: 'Oswald', sans-serif;
+    @apply font-bold tracking-tight text-text-primary dark:text-text-darkPrimary;
   }
 }
 
 @layer components {
   .saas-card {
-    @apply bg-surface-light dark:bg-surface-dark border border-slate-200/80 dark:border-slate-800/80 rounded-xl shadow-saas dark:shadow-saas-dark transition-all duration-300;
+    @apply bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl shadow-saas transition-all duration-300;
   }
 
   .saas-card-hover {
-    @apply saas-card hover:border-primary-500/50 hover:shadow-lg dark:hover:border-primary-500/50 dark:hover:shadow-glow;
+    @apply saas-card hover:border-primary-500/30 hover:-translate-y-0.5;
   }
 
   .saas-button-primary {
-    @apply inline-flex items-center justify-center font-semibold px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 active:bg-primary-700 text-white shadow-sm hover:shadow transition-all duration-150 disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center font-medium px-6 py-3 rounded-lg bg-primary-600 hover:bg-primary-500 active:bg-primary-700 text-white shadow-sm hover:-translate-y-[1px] transition-transform duration-300 disabled:opacity-50 disabled:pointer-events-none;
   }
 
   .saas-button-secondary {
-    @apply inline-flex items-center justify-center font-semibold px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-all duration-150 border border-slate-200 dark:border-slate-700;
+    @apply inline-flex items-center justify-center font-medium px-6 py-3 rounded-lg bg-surface-light hover:bg-surface-hoverLight dark:bg-surface-dark dark:hover:bg-surface-hoverDark text-text-primary dark:text-text-darkPrimary transition-colors duration-300 border border-border-light dark:border-border-dark;
   }
 
   .saas-input {
-    @apply w-full rounded-xl bg-surface-light dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-all duration-150;
+    @apply w-full rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark px-4 py-2.5 text-sm text-text-primary dark:text-text-darkPrimary placeholder-text-muted focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 transition-all duration-150;
   }
 }
 

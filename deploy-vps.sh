@@ -69,9 +69,21 @@ pm2 start dist/src/main.js --name nawatix-api
 pm2 save
 sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u $USER --hp $HOME || true
 
-# 9. Configure Nginx
-echo "Configuring Nginx Reverse Proxy..."
-sudo tee /etc/nginx/sites-available/nawatix-api <<EOF
+# 9. Setup Frontend
+echo "Setting up Frontend..."
+cd ~/nawatix-platform/frontend
+npm install
+npm run build
+
+echo "Copying Frontend build to /var/www/nawatix..."
+sudo mkdir -p /var/www/nawatix
+sudo cp -r dist/* /var/www/nawatix/
+sudo chown -R www-data:www-data /var/www/nawatix
+
+# 10. Configure Nginx
+echo "Configuring Nginx Reverse Proxy & Static Server..."
+sudo tee /etc/nginx/sites-available/nawatix <<EOF
+# Backend API (api.nawatix.com)
 server {
     listen 80;
     server_name api.nawatix.com;
@@ -87,18 +99,33 @@ server {
         proxy_set_header X-Forwarded-For \\\$proxy_add_x_forwarded_for;
     }
 }
+
+# Frontend Web (nawatix.com & www.nawatix.com)
+server {
+    listen 80;
+    server_name nawatix.com www.nawatix.com;
+    root /var/www/nawatix;
+    index index.html;
+
+    location / {
+        try_files \\\$uri \\\$uri/ /index.html;
+    }
+}
 EOF
 
-sudo ln -sf /etc/nginx/sites-available/nawatix-api /etc/nginx/sites-enabled/
+sudo ln -sf /etc/nginx/sites-available/nawatix /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
+# Also remove old api-only config if it exists
+sudo rm -f /etc/nginx/sites-enabled/nawatix-api
 sudo nginx -t
 sudo systemctl restart nginx
 
-# 10. Setup SSL (Let's Encrypt)
-echo "Setting up SSL Certificate for api.nawatix.com..."
-sudo certbot --nginx -d api.nawatix.com --non-interactive --agree-tos -m admin@nawatix.com || echo "Certbot failed, but Nginx is running. You may need to run certbot manually."
+# 11. Setup SSL (Let's Encrypt)
+echo "Setting up SSL Certificates..."
+sudo certbot --nginx -d api.nawatix.com -d nawatix.com -d www.nawatix.com --non-interactive --agree-tos -m admin@nawatix.com || echo "Certbot failed, but Nginx is running. You may need to run certbot manually."
 
 echo "============================================="
 echo "✅ NAWATIX DEPLOYMENT COMPLETED!"
-echo "Your backend should now be live at https://api.nawatix.com"
+echo "Your frontend is live at https://nawatix.com"
+echo "Your backend is live at https://api.nawatix.com"
 echo "============================================="

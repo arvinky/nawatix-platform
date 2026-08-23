@@ -20,22 +20,28 @@ import {
   ShieldCheck,
   Users,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { HeroDashboardMockup } from '../../components/common/HeroDashboardMockup';
+import { ProductStory } from '../../components/common/ProductStory';
+import { PlatformFeatures } from '../../components/common/PlatformFeatures';
 
-const CATEGORIES: { label: string; value: SportCategory | 'ALL' }[] = [
-  { label: 'All Sports', value: 'ALL' },
-  { label: 'Running', value: 'RUNNING' },
-  { label: 'Cycling', value: 'CYCLING' },
-  { label: 'Badminton', value: 'BADMINTON' },
-  { label: 'Basketball', value: 'BASKETBALL' },
-  { label: 'Football', value: 'FOOTBALL' },
-  { label: 'Futsal', value: 'FUTSAL' },
-];
+// Move CATEGORIES inside the component to access useLanguage hook
 
 export const HomePage: React.FC = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const CATEGORIES: { label: string; value: SportCategory | 'ALL' }[] = [
+    { label: t('cat.all'), value: 'ALL' },
+    { label: t('cat.running'), value: 'RUNNING' },
+    { label: t('cat.cycling'), value: 'CYCLING' },
+    { label: t('cat.badminton'), value: 'BADMINTON' },
+    { label: t('cat.basketball'), value: 'BASKETBALL' },
+    { label: t('cat.football'), value: 'FOOTBALL' },
+    { label: t('cat.futsal'), value: 'FUTSAL' },
+  ];
 
   const { data: events, isLoading: isLoadingEvents } = useQuery<Event[]>({
     queryKey: ['events', selectedCategory],
@@ -59,51 +65,65 @@ export const HomePage: React.FC = () => {
   return (
     <div className="space-y-20 pb-20">
       {/* Hero Section */}
-      <section className="relative pt-12 pb-20 lg:pt-20 lg:pb-32 overflow-hidden border-b border-slate-200/80 dark:border-slate-800/80">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-transparent pointer-events-none" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[250px] bg-primary-500/5 dark:bg-primary-500/10 blur-[120px] rounded-full pointer-events-none -z-10" />
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-8">
-
-
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white tracking-tight leading-tight sm:leading-none max-w-4xl mx-auto">
-            {t('home.hero.title1')}{' '}
-            <span className="bg-gradient-to-r from-primary-500 to-amber-500 bg-clip-text text-transparent">
-              {t('home.hero.title2')}
-            </span>{' '}
-            {t('home.hero.title3')}
-          </h1>
-
-          <p className="text-base sm:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed">
-            {t('home.hero.subtitle')}
-          </p>
-
-          {/* Search Bar */}
-          <form onSubmit={handleSearchSubmit} className="max-w-3xl mx-auto pt-6">
-            <div className="relative flex items-center saas-card p-1.5 shadow-2xl shadow-primary-500/10 border-primary-500/40">
-              <Search className="w-5 h-5 text-slate-400 ml-4 mr-3 shrink-0" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t('home.search.placeholder')}
-                className="w-full bg-transparent border-none py-2.5 text-sm sm:text-base focus:outline-none text-slate-900 dark:text-white placeholder-slate-400"
-              />
-              <button
-                type="submit"
-                className="saas-button-primary py-2.5 px-7 shrink-0 rounded-lg text-sm font-semibold shadow-md hover:scale-105 transition-transform"
+      <section className="relative pt-20 pb-24 lg:pt-32 lg:pb-32 overflow-hidden border-b border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-12 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-12 items-center">
+            
+            {/* Left Content (5-6 cols) */}
+            <div className="lg:col-span-5 space-y-8">
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="inline-flex"
               >
-                {t('home.search.button')}
-              </button>
-            </div>
-          </form>
+                <span className="text-[12px] font-bold uppercase tracking-[0.15em] text-text-secondary dark:text-text-darkSecondary border border-border-light dark:border-border-dark px-3 py-1 rounded-full bg-surface-light dark:bg-surface-dark">
+                  {t('home.hero.badge')}
+                </span>
+              </motion.div>
 
-          {/* Quick Action Buttons */}
-          <div className="flex flex-wrap items-center justify-center gap-6 pt-6">
-            <Link to="/events" className="saas-button-primary px-8 py-3.5 text-sm sm:text-base font-semibold flex items-center gap-2 group shadow-xl shadow-primary-500/30 hover:shadow-primary-500/50 hover:-translate-y-1 transition-all">
-              <span>{t('home.btn.browse')}</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
-            </Link>
+              <motion.h1
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
+                className="text-5xl sm:text-6xl lg:text-[72px] font-bold text-text-primary dark:text-text-darkPrimary tracking-tight leading-[0.95]"
+                dangerouslySetInnerHTML={{ __html: t('home.hero.headline') }}
+              />
+
+              <motion.p
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
+                className="text-[18px] text-text-secondary dark:text-text-darkSecondary leading-relaxed max-w-lg"
+              >
+                {t('home.hero.desc')}
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut", delay: 0.3 }}
+                className="flex flex-col sm:flex-row items-center gap-4 pt-4"
+              >
+                <Link to="/events" className="saas-button-primary w-full sm:w-auto h-12 px-6 flex items-center justify-center gap-2 group">
+                  <span>{t('home.hero.btn.explore')}</span>
+                  <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
+                <Link to="/contact" className="saas-button-secondary w-full sm:w-auto h-12 px-6">
+                  {t('home.hero.btn.organizer')}
+                </Link>
+              </motion.div>
+            </div>
+
+            {/* Right Content (6-7 cols) */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97, y: 24 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+              className="lg:col-span-7 h-[460px] relative w-full perspective-1000"
+            >
+              <HeroDashboardMockup />
+            </motion.div>
           </div>
         </div>
       </section>
@@ -167,48 +187,31 @@ export const HomePage: React.FC = () => {
         )}
       </section>
 
-      {/* Value Propositions / Why NAWATIX */}
-      <section className="bg-slate-100/60 dark:bg-slate-900/40 border-y border-slate-200/80 dark:border-slate-800/80 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          <div className="text-center max-w-3xl mx-auto space-y-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-primary-500 block">{t('about.badge')}</span>
-            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              {t('about.title')}
-            </h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              {t('about.desc')}
-            </p>
-          </div>
+      {/* Product Story */}
+      <ProductStory />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: ShieldCheck,
-                title: t('about.card1.title'),
-                description: t('about.card1.desc'),
-              },
-              {
-                icon: Zap,
-                title: t('about.card2.title'),
-                description: t('about.card2.desc'),
-              },
-              {
-                icon: Award,
-                title: t('about.card3.title'),
-                description: t('about.card3.desc'),
-              },
-            ].map((feat, idx) => (
-              <div key={idx} className="saas-card p-6 space-y-4 hover:border-primary-500/40 transition-all duration-300">
+      {/* Platform Features */}
+      <PlatformFeatures />
 
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">{feat.title}</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{feat.description}</p>
-              </div>
-            ))}
+      {/* Final CTA */}
+      <section className="bg-[#111111] py-32 border-t border-[#333333] text-center">
+        <div className="max-w-3xl mx-auto px-6">
+          <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-white mb-6">
+            {t('home.cta.title')}
+          </h2>
+          <p className="text-[18px] text-text-darkSecondary mb-10 leading-relaxed">
+            {t('home.cta.desc')}
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link to="/register" className="w-full sm:w-auto px-8 py-3.5 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-500 hover:-translate-y-0.5 transition-all">
+              {t('home.cta.btn1')}
+            </Link>
+            <Link to="/events" className="w-full sm:w-auto px-8 py-3.5 rounded-lg border border-[#333333] text-white font-medium hover:bg-[#222222] transition-colors">
+              {t('home.cta.btn2')}
+            </Link>
           </div>
         </div>
       </section>
-
-
     </div>
   );
 };
