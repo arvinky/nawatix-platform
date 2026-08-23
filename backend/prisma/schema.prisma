@@ -101,7 +101,7 @@ model Order {
   discount        Float         @default(0)
   total           Float
   status          String        @default("PENDING") // PENDING, PAID, EXPIRED, FAILED
-  paymentMethod   String        @default("Midtrans Snap")
+  paymentMethod   String        @default("DOKU Jokul")
   snapToken       String?
   snapRedirectUrl String?
   createdAt       DateTime      @default(now())
@@ -120,7 +120,7 @@ model Order {
 model Payment {
   id            String   @id @default(uuid())
   orderId       String
-  transactionId String?  // From Midtrans
+  transactionId String?  // From Gateway
   paymentType   String?  // e.g., bank_transfer, credit_card, qris
   grossAmount   Float
   status        String   // e.g., settlement, pending, cancel, expire

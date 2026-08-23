@@ -114,11 +114,17 @@ export const CheckoutPage: React.FC = () => {
         participantPhone: data.participantPhone,
       };
 
-      const res = await axiosClient.post<any, { id: string; snapToken?: string }>('/api/orders', payload);
+      const res = await axiosClient.post<any, { id: string; snapToken?: string; snapRedirectUrl?: string }>('/api/orders', payload);
       setCreatedOrderId(res.id);
-      setSnapToken(res.snapToken || `TEST_SNAP_${res.id}`);
-      setIsSimulatedModalOpen(true);
-      showToast('Order created! Choose simulated payment method below.', 'info');
+      
+      if (res.snapRedirectUrl) {
+        window.location.href = res.snapRedirectUrl;
+        return;
+      }
+      
+      // Fallback
+      showToast('Order created! No redirect URL returned.', 'info');
+      navigate(`/order-success/${res.id}`);
     } catch (err: any) {
       showToast(err.displayMessage || 'Failed to initialize ticket checkout.', 'error');
     }

@@ -60,7 +60,7 @@ export class OrdersService {
         discount,
         total,
         status: PaymentStatus.PENDING,
-        paymentMethod: 'Midtrans Snap',
+        paymentMethod: 'DOKU Jokul',
       },
       include: {
         user: true,
@@ -76,8 +76,8 @@ export class OrdersService {
       });
     }
 
-    // Call PaymentsService to generate Snap Token
-    const snapResponse = await this.paymentsService.createSnapTransaction({
+    // 3. Get Doku Checkout URL
+    const snapResponse = await this.paymentsService.createDokuCheckoutUrl({
       id: order.id,
       invoice: order.invoice,
       total: order.total,

@@ -2,35 +2,37 @@ import { Injectable, NotFoundException, BadRequestException, Logger } from '@nes
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
 import { PaymentStatus, RegistrationStatus } from '../../common/enums';
-import * as midtransClient from 'midtrans-client';
+import axios from 'axios';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class PaymentsService {
   private readonly logger = new Logger(PaymentsService.name);
-  private snap: any;
   private isSimulation: boolean;
+  private dokuClientId: string;
+  private dokuSecretKey: string;
+  private dokuBaseUrl: string;
 
   constructor(
     private configService: ConfigService,
     private prisma: PrismaService,
   ) {
-    const serverKey = this.configService.get<string>('MIDTRANS_SERVER_KEY') || 'SB-Mid-server-TEST';
-    const clientKey = this.configService.get<string>('MIDTRANS_CLIENT_KEY') || 'SB-Mid-client-TEST';
-    const isProduction = this.configService.get<string>('MIDTRANS_IS_PRODUCTION') === 'true';
-    this.isSimulation = this.configService.get<string>('MIDTRANS_IS_SIMULATION') !== 'false'; // Default to true in test
-
-    try {
-      this.snap = new midtransClient.Snap({
-        isProduction,
-        serverKey,
-        clientKey,
-      });
-    } catch (e) {
-      this.logger.error('Failed to initialize midtrans SDK:', e);
-    }
+    this.dokuClientId = this.configService.get<string>('DOKU_CLIENT_ID') || 'TEST-CLIENT-ID';
+    this.dokuSecretKey = this.configService.get<string>('DOKU_SECRET_KEY') || 'TEST-SECRET-KEY';
+    const isProduction = this.configService.get<string>('DOKU_IS_PRODUCTION') === 'true';
+    this.isSimulation = this.configService.get<string>('DOKU_IS_SIMULATION') !== 'false'; // Default to true in test
+    this.dokuBaseUrl = isProduction ? 'https://api.doku.com' : 'https://api-sandbox.doku.com';
   }
 
-  async createSnapTransaction(order: {
+  private generateSignature(requestTarget: string, reqBody: any, timestamp: string, requestId: string): string {
+    const digest = crypto.createHash('sha256').update(JSON.stringify(reqBody)).digest('base64');
+    const componentSignature = `Client-Id:${this.dokuClientId}\nRequest-Id:${requestId}\nRequest-Timestamp:${timestamp}\nRequest-Target:${requestTarget}\nDigest:${digest}`;
+    
+    const hmac = crypto.createHmac('sha256', this.dokuSecretKey);
+    return 'HMACSHA256=' + hmac.update(componentSignature).digest('base64');
+  }
+
+  async createDokuCheckoutUrl(order: {
     id: string;
     invoice: string;
     total: number;
@@ -38,56 +40,69 @@ export class PaymentsService {
     event: { name: string };
   }): Promise<{ snapToken: string; redirectUrl: string }> {
     if (this.isSimulation) {
-      this.logger.log(`Simulation mode active for Invoice ${order.invoice}. Returning simulated snap token.`);
+      this.logger.log(`Simulation mode active for Invoice ${order.invoice}. Returning simulated Doku URL.`);
       return {
-        snapToken: `SIM_SNAP_TOKEN_${order.invoice}_${Date.now()}`,
+        snapToken: `SIM_DOKU_TOKEN_${order.invoice}_${Date.now()}`,
         redirectUrl: `http://localhost:5173/payment-simulator/${order.id}`,
       };
     }
 
-    const parameter = {
-      transaction_details: {
-        order_id: order.invoice,
-        gross_amount: Math.round(order.total),
+    const requestBody = {
+      order: {
+        amount: Math.round(order.total),
+        invoice_number: order.invoice,
+        callback_url: `${this.configService.get<string>('FRONTEND_URL')}/order-success/${order.id}`,
       },
-      credit_card: {
-        secure: true,
+      payment: {
+        payment_due_date: 60, // 60 minutes
       },
-      customer_details: {
-        first_name: order.user.name,
+      customer: {
+        name: order.user.name,
         email: order.user.email,
-        phone: order.user.phone || '+62810000000',
-      },
-      item_details: [
-        {
-          id: order.id,
-          price: Math.round(order.total),
-          quantity: 1,
-          name: order.event.name.substring(0, 50), // Midtrans max length constraint
-        },
-      ],
+        phone: order.user.phone || '0810000000',
+      }
     };
 
+    const requestId = crypto.randomUUID();
+    const timestamp = new Date().toISOString();
+    const requestTarget = '/checkout/v1/payment';
+
     try {
-      const response = await this.snap.createTransaction(parameter);
+      const response = await axios.post(`${this.dokuBaseUrl}${requestTarget}`, requestBody, {
+        headers: {
+          'Client-Id': this.dokuClientId,
+          'Request-Id': requestId,
+          'Request-Timestamp': timestamp,
+          'Signature': this.generateSignature(requestTarget, requestBody, timestamp, requestId),
+          'Content-Type': 'application/json',
+        }
+      });
+
       return {
-        snapToken: response.token,
-        redirectUrl: response.redirect_url,
+        snapToken: response.data?.response?.payment?.token_id || `DOKU_TOKEN_${order.invoice}`,
+        redirectUrl: response.data?.response?.payment?.url || `http://localhost:5173/payment-simulator/${order.id}`,
       };
-    } catch (error) {
-      this.logger.error('Midtrans API error, falling back to Simulation mode:', error);
+    } catch (error: any) {
+      this.logger.error('Doku API error, falling back to Simulation mode:', error.response?.data || error.message);
       return {
-        snapToken: `SIM_SNAP_TOKEN_${order.invoice}`,
+        snapToken: `SIM_DOKU_TOKEN_${order.invoice}`,
         redirectUrl: `http://localhost:5173/payment-simulator/${order.id}`,
       };
     }
   }
 
   async handleWebhook(payload: any) {
-    this.logger.log(`Received payment webhook notification for order: ${payload.order_id}`);
-    const invoice = payload.order_id;
-    const transactionStatus = payload.transaction_status;
-    const paymentType = payload.payment_type;
+    this.logger.log(`Received Doku webhook notification for order: ${payload.order?.invoice_number}`);
+    const invoice = payload.order?.invoice_number;
+    
+    // Jokul transaction status mapping
+    // SUCCESS, FAILED
+    const transactionStatus = payload.transaction?.status;
+    const paymentType = payload.transaction?.payment_type_name || 'DOKU Payment';
+
+    if (!invoice) {
+      throw new BadRequestException('Invalid payload: invoice_number missing');
+    }
 
     const order = await this.prisma.order.findUnique({
       where: { invoice },
@@ -99,10 +114,10 @@ export class PaymentsService {
     }
 
     let newStatus = order.status;
-    if (transactionStatus === 'capture' || transactionStatus === 'settlement') {
+    if (transactionStatus === 'SUCCESS') {
       newStatus = PaymentStatus.PAID;
-    } else if (transactionStatus === 'cancel' || transactionStatus === 'deny' || transactionStatus === 'expire') {
-      newStatus = transactionStatus === 'expire' ? PaymentStatus.EXPIRED : PaymentStatus.FAILED;
+    } else if (transactionStatus === 'FAILED' || transactionStatus === 'EXPIRED') {
+      newStatus = transactionStatus === 'EXPIRED' ? PaymentStatus.EXPIRED : PaymentStatus.FAILED;
     }
 
     await this.prisma.$transaction(async (tx) => {
@@ -110,10 +125,10 @@ export class PaymentsService {
       await tx.payment.create({
         data: {
           orderId: order.id,
-          transactionId: payload.transaction_id || `TRX-${Date.now()}`,
-          paymentType: paymentType || 'online_payment',
-          grossAmount: Number(payload.gross_amount) || order.total,
-          status: transactionStatus || 'settlement',
+          transactionId: payload.transaction?.original_request_id || `DOKU-TRX-${Date.now()}`,
+          paymentType: paymentType,
+          grossAmount: Number(payload.order?.amount) || order.total,
+          status: transactionStatus || 'SUCCESS',
           rawResponse: JSON.stringify(payload),
         },
       });
@@ -122,7 +137,7 @@ export class PaymentsService {
       if (order.status !== newStatus) {
         await tx.order.update({
           where: { id: order.id },
-          data: { status: newStatus, paymentMethod: `Midtrans Snap (${paymentType || 'Instant'})` },
+          data: { status: newStatus, paymentMethod: `DOKU Jokul (${paymentType})` },
         });
 
         // 3. If turning PAID and participant not created yet, generate sequential registration number
@@ -171,21 +186,24 @@ export class PaymentsService {
       return { success: true, message: 'Order is already paid.' };
     }
 
-    // Trigger fake webhook with settlement
+    // Trigger fake Doku webhook with SUCCESS
     return this.handleWebhook({
-      order_id: order.invoice,
-      transaction_status: 'settlement',
-      payment_type: 'bank_transfer',
-      gross_amount: order.total,
-      transaction_id: `SIM_TRX_${Date.now()}`,
+      order: {
+        invoice_number: order.invoice,
+        amount: order.total
+      },
+      transaction: {
+        status: 'SUCCESS',
+        payment_type_name: 'Simulated Payment',
+        original_request_id: `SIM_TRX_${Date.now()}`
+      }
     });
   }
 
   private async generateRegistrationNumber(tx: any): Promise<string> {
-    const year = new Date().getFullYear(); // e.g. 2026
+    const year = new Date().getFullYear();
     const prefix = `REG-${year}`;
 
-    // Find highest registration number starting with REG-2026
     const lastParticipant = await tx.participant.findFirst({
       where: { registrationNumber: { startsWith: prefix } },
       orderBy: { registrationNumber: 'desc' },
@@ -195,7 +213,6 @@ export class PaymentsService {
     if (lastParticipant) {
       const parts = lastParticipant.registrationNumber.split('-');
       if (parts.length >= 2) {
-        // e.g. 202600001 -> remove year prefix
         const numPart = parts[1].substring(4);
         const parsed = parseInt(numPart, 10);
         if (!isNaN(parsed)) {

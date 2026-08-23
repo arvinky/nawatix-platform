@@ -8,10 +8,10 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 export class PaymentsController {
   constructor(private paymentsService: PaymentsService) {}
 
-  @Post('midtrans/notification')
-  @ApiOperation({ summary: 'Midtrans Webhook notification endpoint for payment status updates' })
-  @ApiResponse({ status: 200, description: 'Webhook processed successfully' })
-  async midtransNotification(@Body() payload: any) {
+  @Post('doku/notification')
+  @ApiOperation({ summary: 'DOKU Webhook notification endpoint for payment status updates' })
+  @ApiResponse({ status: 200, description: 'Notification processed' })
+  async dokuNotification(@Body() payload: any) {
     return this.paymentsService.handleWebhook(payload);
   }
 
