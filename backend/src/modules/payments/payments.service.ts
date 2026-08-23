@@ -76,7 +76,7 @@ export class PaymentsService {
     };
 
     const requestId = crypto.randomUUID();
-    const timestamp = new Date().toISOString();
+    const timestamp = new Date().toISOString().substring(0, 19) + 'Z';
     const requestTarget = '/checkout/v1/payment';
 
     try {
