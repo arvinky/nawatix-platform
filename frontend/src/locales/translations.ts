@@ -350,6 +350,42 @@ export const translations = {
     'mockup.race.status': 'STATUS',
     'mockup.race.verified': 'TERVERIFIKASI',
     'mockup.race.checkedIn': 'Peserta Sudah Check-in',
+
+    // Marketplace
+    'market.hero.title': 'EVENT OLAHRAGA DI INDONESIA',
+    'market.hero.sub1': 'Temukan event.',
+    'market.hero.sub2': 'Siap bertanding.',
+    'market.hero.desc': 'Cari event olahraga di kotamu dan daftar langsung melalui NAWATIX.',
+    'market.hero.search': 'Cari event, kota, atau olahraga...',
+    
+    'market.featured.title': 'Event Pilihan',
+    
+    'market.discover.title': 'Temukan event berdasarkan olahraga',
+    
+    'market.upcoming.title': 'Event yang akan datang',
+    
+    'market.hiw.title': 'Daftar event dalam beberapa langkah',
+    'market.hiw.1.title': 'TEMUKAN',
+    'market.hiw.1.desc': 'Cari event yang ingin kamu ikuti.',
+    'market.hiw.2.title': 'PILIH',
+    'market.hiw.2.desc': 'Pilih kategori dan tiket.',
+    'market.hiw.3.title': 'DAFTAR',
+    'market.hiw.3.desc': 'Isi data peserta.',
+    'market.hiw.4.title': 'BAYAR',
+    'market.hiw.4.desc': 'Selesaikan pembayaran.',
+    'market.hiw.5.title': 'TIKET',
+    'market.hiw.5.desc': 'E-ticket tersimpan di akun.',
+    'market.hiw.6.title': 'BERTANDING',
+    'market.hiw.6.desc': 'Datang dan ikuti event.',
+    
+    'market.org.title': 'Punya event olahraga?',
+    'market.org.desc': 'Publikasikan event Anda di NAWATIX. Jangkau peserta, kelola pendaftaran, dan pantau transaksi dari satu tempat.',
+    'market.org.btn': 'Daftarkan Event →',
+    
+    'market.trust.title': 'Event yang terdaftar di NAWATIX',
+    
+    'market.cta.title': 'Temukan event berikutnya.',
+    'market.cta.btn': 'Jelajahi Event',
   },
   en: {
     // Navigation
@@ -698,6 +734,42 @@ export const translations = {
     'mockup.race.status': 'STATUS',
     'mockup.race.verified': 'VERIFIED',
     'mockup.race.checkedIn': 'Participants Checked In',
+
+    // Marketplace
+    'market.hero.title': 'SPORTS EVENTS IN INDONESIA',
+    'market.hero.sub1': 'Find your event.',
+    'market.hero.sub2': 'Get ready to race.',
+    'market.hero.desc': 'Search for sports events in your city and register directly through NAWATIX.',
+    'market.hero.search': 'Search events, cities, or sports...',
+    
+    'market.featured.title': 'Featured Events',
+    
+    'market.discover.title': 'Discover events by sport',
+    
+    'market.upcoming.title': 'Upcoming events',
+    
+    'market.hiw.title': 'Register for an event in a few steps',
+    'market.hiw.1.title': 'DISCOVER',
+    'market.hiw.1.desc': 'Find the event you want to join.',
+    'market.hiw.2.title': 'SELECT',
+    'market.hiw.2.desc': 'Choose category and ticket.',
+    'market.hiw.3.title': 'REGISTER',
+    'market.hiw.3.desc': 'Fill in participant data.',
+    'market.hiw.4.title': 'PAY',
+    'market.hiw.4.desc': 'Complete the payment.',
+    'market.hiw.5.title': 'TICKET',
+    'market.hiw.5.desc': 'E-ticket saved in your account.',
+    'market.hiw.6.title': 'COMPETE',
+    'market.hiw.6.desc': 'Show up and join the event.',
+    
+    'market.org.title': 'Hosting a sports event?',
+    'market.org.desc': 'Publish your event on NAWATIX. Reach participants, manage registrations, and track transactions all in one place.',
+    'market.org.btn': 'Register Event →',
+    
+    'market.trust.title': 'Events registered on NAWATIX',
+    
+    'market.cta.title': 'Find your next event.',
+    'market.cta.btn': 'Explore Events',
   },
 };
 
