@@ -88,7 +88,8 @@ export const CheckoutPage: React.FC = () => {
     try {
       const res = await axiosClient.post<any, { discount: number }>('/api/vouchers/validate', {
         code: voucherCode.trim().toUpperCase(),
-        amount: ticket.price,
+        eventId: eventId,
+        subtotal: ticket.price,
       });
       setDiscount(res.discount);
       setVoucherApplied(true);

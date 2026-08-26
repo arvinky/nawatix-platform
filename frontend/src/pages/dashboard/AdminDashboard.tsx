@@ -12,7 +12,7 @@ import {
   Area,
 } from 'recharts';
 import { axiosClient } from '../../api/axiosClient';
-import { DashboardStats, User, Event, Voucher } from '../../types';
+import { DashboardStats, User, Event } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../components/common/Toast';
 import { CardSkeleton, TableSkeleton } from '../../components/common/Skeleton';
@@ -39,14 +39,12 @@ export const AdminDashboard: React.FC = () => {
   const { showToast } = useToast();
   const queryClient = useQueryClient();
 
-  const [activeTab, setActiveTab] = useState<'analytics' | 'users' | 'events' | 'settings' | 'vouchers'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'users' | 'events' | 'settings'>('analytics');
   const [platformName, setPlatformName] = useState<string>('NAWATIX');
   const [themeSetting, setThemeSetting] = useState<string>('dark');
   const [isSavingSettings, setIsSavingSettings] = useState<boolean>(false);
   const [isNewAdminModalOpen, setIsNewAdminModalOpen] = useState<boolean>(false);
   const [newAdmin, setNewAdmin] = useState({ name: '', email: '', password: '', organizationName: '' });
-  const [isNewVoucherModalOpen, setIsNewVoucherModalOpen] = useState<boolean>(false);
-  const [newVoucher, setNewVoucher] = useState({ code: '', discountType: 'FIXED_AMOUNT', value: 0, usageLimit: 100, expiredDate: '' });
 
   const { data: stats, isLoading: isLoadingStats } = useQuery<DashboardStats>({
     queryKey: ['adminStats'],
@@ -66,35 +64,7 @@ export const AdminDashboard: React.FC = () => {
     enabled: activeTab === 'events',
   });
 
-  const { data: vouchersList, isLoading: isLoadingVouchers } = useQuery<Voucher[]>({
-    queryKey: ['adminVouchers'],
-    queryFn: async () => axiosClient.get('/api/vouchers'),
-    enabled: activeTab === 'vouchers',
-  });
 
-  const handleCreateVoucher = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await axiosClient.post('/api/vouchers', { ...newVoucher, expiredDate: new Date(newVoucher.expiredDate).toISOString() });
-      showToast('Promo code created successfully!', 'success');
-      setIsNewVoucherModalOpen(false);
-      setNewVoucher({ code: '', discountType: 'FIXED_AMOUNT', value: 0, usageLimit: 100, expiredDate: '' });
-      queryClient.invalidateQueries({ queryKey: ['adminVouchers'] });
-    } catch (err: any) {
-      showToast(err.displayMessage || 'Failed to create promo code', 'error');
-    }
-  };
-
-  const handleDeleteVoucher = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this promo code?')) return;
-    try {
-      await axiosClient.delete(`/api/vouchers/${id}`);
-      showToast('Promo code deleted!', 'success');
-      queryClient.invalidateQueries({ queryKey: ['adminVouchers'] });
-    } catch (err: any) {
-      showToast(err.displayMessage || 'Failed to delete promo code', 'error');
-    }
-  };
 
   const handlePromoteToAdmin = async (userId: string) => {
     try {
@@ -168,7 +138,6 @@ export const AdminDashboard: React.FC = () => {
           { id: 'analytics', label: 'Platform Analytics & Revenue', icon: Activity },
           { id: 'users', label: 'User & Admin Directory', icon: Users },
           { id: 'events', label: 'All Tournament Catalog', icon: Calendar },
-          { id: 'vouchers', label: 'Promo Codes', icon: Tag },
           { id: 'settings', label: 'SaaS Platform Settings', icon: Settings },
         ].map((tab) => {
           const Icon = tab.icon;
@@ -347,60 +316,7 @@ export const AdminDashboard: React.FC = () => {
           </div>
         ))}
 
-      {/* TAB 5: VOUCHERS */}
-      {activeTab === 'vouchers' && (
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Promo Codes Management</h2>
-            <button onClick={() => setIsNewVoucherModalOpen(true)} className="saas-button-primary text-xs py-2 px-4 gap-2 flex items-center">
-              <Plus className="w-4 h-4" /> Create Promo Code
-            </button>
-          </div>
-          {isLoadingVouchers ? (
-            <TableSkeleton rows={5} cols={5} />
-          ) : !vouchersList || vouchersList.length === 0 ? (
-            <EmptyState title="No Promo Codes" description="Create promo codes to offer discounts to participants." />
-          ) : (
-            <div className="saas-card overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-800 text-[11px] uppercase font-bold text-slate-400 bg-slate-50/50 dark:bg-slate-900/50">
-                    <th className="py-4 px-6">Code</th>
-                    <th className="py-4 px-6">Discount</th>
-                    <th className="py-4 px-6">Usage</th>
-                    <th className="py-4 px-6">Status / Expiry</th>
-                    <th className="py-4 px-6">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80 text-sm">
-                  {vouchersList.map((v) => (
-                    <tr key={v.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30">
-                      <td className="py-4 px-6 font-bold text-slate-900 dark:text-white uppercase">{v.code}</td>
-                      <td className="py-4 px-6 text-emerald-500 font-bold">
-                        {v.discountType === 'FIXED_AMOUNT' ? `Rp ${v.value.toLocaleString('id-ID')}` : `${v.value}%`}
-                      </td>
-                      <td className="py-4 px-6 text-slate-600 dark:text-slate-400">{v.usedCount} / {v.usageLimit}</td>
-                      <td className="py-4 px-6">
-                        <span className={`px-2.5 py-1 rounded-md text-[11px] font-extrabold uppercase ${
-                          v.status === 'ACTIVE' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
-                        }`}>
-                          {v.status}
-                        </span>
-                        <div className="text-[10px] text-slate-400 mt-1">Exp: {new Date(v.expiredDate).toLocaleDateString()}</div>
-                      </td>
-                      <td className="py-4 px-6">
-                        <button onClick={() => handleDeleteVoucher(v.id)} className="text-rose-500 hover:text-rose-600 p-1.5 rounded hover:bg-rose-500/10">
-                          <Trash2 className="w-4 h-4 shrink-0" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      )}
+
 
       {/* TAB 4: SETTINGS */}
       {activeTab === 'settings' && (
@@ -456,41 +372,7 @@ export const AdminDashboard: React.FC = () => {
         </form>
       </Modal>
 
-      <Modal isOpen={isNewVoucherModalOpen} onClose={() => setIsNewVoucherModalOpen(false)} title="Create Promo Code">
-        <form onSubmit={handleCreateVoucher} className="space-y-4 py-2">
-          <div>
-            <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Promo Code</label>
-            <input type="text" required value={newVoucher.code} onChange={e => setNewVoucher({...newVoucher, code: e.target.value.toUpperCase()})} className="saas-input uppercase" placeholder="e.g. MERDEKA2026" />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Discount Type</label>
-              <select value={newVoucher.discountType} onChange={e => setNewVoucher({...newVoucher, discountType: e.target.value})} className="saas-input">
-                <option value="FIXED_AMOUNT">Fixed Amount (Rp)</option>
-                <option value="PERCENTAGE">Percentage (%)</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Value</label>
-              <input type="number" required min="1" value={newVoucher.value} onChange={e => setNewVoucher({...newVoucher, value: Number(e.target.value)})} className="saas-input" placeholder="e.g. 50000" />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Usage Limit</label>
-              <input type="number" required min="1" value={newVoucher.usageLimit} onChange={e => setNewVoucher({...newVoucher, usageLimit: Number(e.target.value)})} className="saas-input" placeholder="e.g. 100" />
-            </div>
-            <div>
-              <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Expiry Date</label>
-              <input type="date" required value={newVoucher.expiredDate} onChange={e => setNewVoucher({...newVoucher, expiredDate: e.target.value})} className="saas-input" />
-            </div>
-          </div>
-          <div className="pt-4 flex justify-end gap-3">
-            <button type="button" onClick={() => setIsNewVoucherModalOpen(false)} className="saas-button-secondary py-2 px-4 text-sm">Cancel</button>
-            <button type="submit" className="saas-button-primary py-2 px-6 text-sm">Create Voucher</button>
-          </div>
-        </form>
-      </Modal>
+
 
     </div>
   );

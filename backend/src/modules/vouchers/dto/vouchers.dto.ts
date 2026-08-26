@@ -8,6 +8,11 @@ export class CheckVoucherDto {
   @IsNotEmpty()
   code: string;
 
+  @ApiProperty({ example: 'uuid-event-id' })
+  @IsString()
+  @IsNotEmpty()
+  eventId: string;
+
   @ApiProperty({ example: 400000 })
   @IsNumber()
   @Min(0)
@@ -19,6 +24,11 @@ export class CreateVoucherDto {
   @IsString()
   @IsNotEmpty()
   code: string;
+
+  @ApiProperty({ example: 'uuid-event-id' })
+  @IsString()
+  @IsNotEmpty()
+  eventId: string;
 
   @ApiProperty({ enum: DiscountType, default: DiscountType.FIXED_AMOUNT })
   @IsEnum(DiscountType)

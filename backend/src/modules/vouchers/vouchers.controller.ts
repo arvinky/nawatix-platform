@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { VouchersService } from './vouchers.service';
 import { CheckVoucherDto, CreateVoucherDto, UpdateVoucherDto } from './dto/vouchers.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -20,36 +20,37 @@ export class VouchersController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ORGANIZER)
   @ApiBearerAuth()
+  @ApiQuery({ name: 'eventId', required: false, type: String })
   @ApiOperation({ summary: 'Admin/Organizer: List promotional vouchers' })
-  async findAll() {
-    return this.vouchersService.findAll();
+  async findAll(@Query('eventId') eventId?: string) {
+    return this.vouchersService.findAll(eventId);
   }
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPER_ADMIN)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ORGANIZER)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Super Admin: Create a discount voucher' })
+  @ApiOperation({ summary: 'Admin/Organizer: Create a discount voucher' })
   async create(@Body() dto: CreateVoucherDto) {
     return this.vouchersService.create(dto);
   }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPER_ADMIN)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ORGANIZER)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Super Admin: Modify voucher attributes' })
+  @ApiOperation({ summary: 'Admin/Organizer: Modify voucher attributes' })
   async update(@Param('id') id: string, @Body() dto: UpdateVoucherDto) {
     return this.vouchersService.update(id, dto);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPER_ADMIN)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ORGANIZER)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Super Admin: Delete voucher' })
+  @ApiOperation({ summary: 'Admin/Organizer: Delete voucher' })
   async remove(@Param('id') id: string) {
     return this.vouchersService.remove(id);
   }

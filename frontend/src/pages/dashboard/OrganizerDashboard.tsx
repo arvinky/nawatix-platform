@@ -72,6 +72,8 @@ export const OrganizerDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'events' | 'orders' | 'participants' | 'checkin' | 'reports'>('overview');
   const [isNewEventModalOpen, setIsNewEventModalOpen] = useState<boolean>(false);
   const [selectedEventForTicket, setSelectedEventForTicket] = useState<string | null>(null);
+  const [selectedEventForVoucher, setSelectedEventForVoucher] = useState<string | null>(null);
+  const [newVoucher, setNewVoucher] = useState({ code: '', discountType: 'FIXED_AMOUNT', value: 0, usageLimit: 100, expiredDate: '' });
   const [bannerFile, setBannerFile] = useState<File | null>(null);
 
   // On-Site Check-In search state
@@ -186,6 +188,31 @@ export const OrganizerDashboard: React.FC = () => {
       resetTicketForm();
     } catch (err: any) {
       showToast(err.displayMessage || 'Failed to add ticket category', 'error');
+    }
+  };
+
+  const handleCreateVoucher = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedEventForVoucher) return;
+    try {
+      await axiosClient.post('/api/vouchers', { ...newVoucher, eventId: selectedEventForVoucher, expiredDate: new Date(newVoucher.expiredDate).toISOString() });
+      showToast('Promo code created successfully!', 'success');
+      setSelectedEventForVoucher(null);
+      setNewVoucher({ code: '', discountType: 'FIXED_AMOUNT', value: 0, usageLimit: 100, expiredDate: '' });
+      queryClient.invalidateQueries({ queryKey: ['myOrgEvents'] });
+    } catch (err: any) {
+      showToast(err.displayMessage || 'Failed to create promo code', 'error');
+    }
+  };
+
+  const handleDeleteVoucher = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this promo code?')) return;
+    try {
+      await axiosClient.delete(`/api/vouchers/${id}`);
+      showToast('Promo code deleted!', 'success');
+      queryClient.invalidateQueries({ queryKey: ['myOrgEvents'] });
+    } catch (err: any) {
+      showToast(err.displayMessage || 'Failed to delete promo code', 'error');
     }
   };
 
@@ -487,6 +514,76 @@ export const OrganizerDashboard: React.FC = () => {
                       </div>
                     ) : (
                       <span className="text-xs text-slate-400 italic">{t('org.event.noTiers')}</span>
+                    )}
+                  </div>
+
+                  {/* Vouchers section */}
+                  <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Promo Codes</span>
+                      <button
+                        onClick={() => setSelectedEventForVoucher(evt.id)}
+                        className="text-xs text-primary-500 font-bold hover:underline flex items-center gap-1"
+                      >
+                        <Plus className="w-3.5 h-3.5" /> Tambah Voucher
+                      </button>
+                    </div>
+                    {evt.vouchers && evt.vouchers.length > 0 ? (
+                      <div className="grid grid-cols-1 gap-2">
+                        {evt.vouchers.map((v) => (
+                          <div key={v.id} className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 flex justify-between items-center text-xs">
+                            <div>
+                              <span className="font-bold text-slate-800 dark:text-slate-200 block uppercase">{v.code}</span>
+                              <span className="text-[10px] text-slate-400">Terpakai {v.usedCount} / Kuota {v.usageLimit}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="font-extrabold text-emerald-500">
+                                {v.discountType === 'FIXED_AMOUNT' ? `Rp ${v.value.toLocaleString('id-ID')}` : `${v.value}%`}
+                              </span>
+                              <button onClick={() => handleDeleteVoucher(v.id)} className="text-rose-500 hover:text-rose-600 p-1 rounded hover:bg-rose-500/10">
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-slate-400 italic">Belum ada kode promo</span>
+                    )}
+                  </div>
+
+                  {/* Vouchers section */}
+                  <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Promo Codes</span>
+                      <button
+                        onClick={() => setSelectedEventForVoucher(evt.id)}
+                        className="text-xs text-primary-500 font-bold hover:underline flex items-center gap-1"
+                      >
+                        <Plus className="w-3.5 h-3.5" /> Tambah Voucher
+                      </button>
+                    </div>
+                    {evt.vouchers && evt.vouchers.length > 0 ? (
+                      <div className="grid grid-cols-1 gap-2">
+                        {evt.vouchers.map((v) => (
+                          <div key={v.id} className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 flex justify-between items-center text-xs">
+                            <div>
+                              <span className="font-bold text-slate-800 dark:text-slate-200 block uppercase">{v.code}</span>
+                              <span className="text-[10px] text-slate-400">Terpakai {v.usedCount} / Kuota {v.usageLimit}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="font-extrabold text-emerald-500">
+                                {v.discountType === 'FIXED_AMOUNT' ? `Rp ${v.value.toLocaleString('id-ID')}` : `${v.value}%`}
+                              </span>
+                              <button onClick={() => handleDeleteVoucher(v.id)} className="text-rose-500 hover:text-rose-600 p-1 rounded hover:bg-rose-500/10">
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-slate-400 italic">Belum ada kode promo</span>
                     )}
                   </div>
 
@@ -895,6 +992,43 @@ export const OrganizerDashboard: React.FC = () => {
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
             <button type="button" onClick={() => setSelectedEventForTicket(null)} className="saas-button-secondary text-xs py-2.5">{t('org.modal.ticket.cancel')}</button>
             <button type="submit" disabled={tktSubmitting} className="saas-button-primary text-xs py-2.5 px-6">{t('org.modal.ticket.submit')}</button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Modal: Create Voucher */}
+      <Modal isOpen={!!selectedEventForVoucher} onClose={() => setSelectedEventForVoucher(null)} title="Create Promo Code" maxWidth="max-w-md">
+        <form onSubmit={handleCreateVoucher} className="space-y-4 py-2">
+          <div>
+            <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Promo Code</label>
+            <input type="text" required value={newVoucher.code} onChange={e => setNewVoucher({...newVoucher, code: e.target.value.toUpperCase()})} className="saas-input uppercase" placeholder="e.g. MERDEKA2026" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Discount Type</label>
+              <select value={newVoucher.discountType} onChange={e => setNewVoucher({...newVoucher, discountType: e.target.value})} className="saas-input">
+                <option value="FIXED_AMOUNT">Fixed Amount (Rp)</option>
+                <option value="PERCENTAGE">Percentage (%)</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Value</label>
+              <input type="number" required min="1" value={newVoucher.value} onChange={e => setNewVoucher({...newVoucher, value: Number(e.target.value)})} className="saas-input" placeholder="e.g. 50000" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Usage Limit</label>
+              <input type="number" required min="1" value={newVoucher.usageLimit} onChange={e => setNewVoucher({...newVoucher, usageLimit: Number(e.target.value)})} className="saas-input" placeholder="e.g. 100" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Expiry Date</label>
+              <input type="date" required value={newVoucher.expiredDate} onChange={e => setNewVoucher({...newVoucher, expiredDate: e.target.value})} className="saas-input" />
+            </div>
+          </div>
+          <div className="pt-4 flex justify-end gap-3">
+            <button type="button" onClick={() => setSelectedEventForVoucher(null)} className="saas-button-secondary py-2 px-4 text-sm">Cancel</button>
+            <button type="submit" className="saas-button-primary py-2 px-6 text-sm">Create Voucher</button>
           </div>
         </form>
       </Modal>

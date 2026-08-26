@@ -7,8 +7,10 @@ import { VoucherStatus, DiscountType } from '../../common/enums';
 export class VouchersService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll() {
+  async findAll(eventId?: string) {
+    const whereClause = eventId ? { eventId } : {};
     return this.prisma.voucher.findMany({
+      where: whereClause,
       orderBy: { createdAt: 'desc' },
       include: {
         _count: {
@@ -25,6 +27,10 @@ export class VouchersService {
 
     if (!voucher) {
       throw new NotFoundException('Voucher code not found.');
+    }
+
+    if (voucher.eventId !== dto.eventId) {
+      throw new BadRequestException('This voucher code is not valid for this event.');
     }
 
     if (voucher.status !== VoucherStatus.ACTIVE || new Date(voucher.expiredDate) < new Date()) {
@@ -66,6 +72,7 @@ export class VouchersService {
     return this.prisma.voucher.create({
       data: {
         code: dto.code.toUpperCase(),
+        eventId: dto.eventId,
         discountType: dto.discountType,
         value: dto.value,
         usageLimit: dto.usageLimit,

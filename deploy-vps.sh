@@ -58,7 +58,7 @@ EOF
 # Install dependencies and build
 npm install
 npx prisma generate
-npx prisma db push
+npx prisma db push --accept-data-loss
 npm run build
 
 # 8. Start with PM2

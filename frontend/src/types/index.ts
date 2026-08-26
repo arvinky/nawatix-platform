@@ -58,6 +58,7 @@ export interface Event {
   status: EventStatus;
   organizer?: User;
   ticketCategories?: TicketCategory[];
+  vouchers?: Voucher[];
   startingPrice?: number;
   remainingQuota?: number;
   totalQuota?: number;
@@ -109,13 +110,18 @@ export interface Order {
 
 export interface Voucher {
   id: string;
+  eventId: string;
   code: string;
   discountType: 'PERCENTAGE' | 'FIXED_AMOUNT';
   value: number;
   usageLimit: number;
   usedCount: number;
+  startDate: string;
   expiredDate: string;
   status: 'ACTIVE' | 'EXPIRED' | 'DISABLED';
+  _count?: {
+    orders: number;
+  };
 }
 
 export interface DashboardStats {

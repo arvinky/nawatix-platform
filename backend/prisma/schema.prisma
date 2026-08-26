@@ -52,6 +52,8 @@ model Event {
   participants   Participant[]
   bibs           Bib[]
 
+  vouchers    Voucher[]
+
   @@map("events")
 }
 
@@ -74,6 +76,7 @@ model TicketCategory {
 
 model Voucher {
   id          String       @id @default(uuid())
+  eventId     String
   code        String       @unique
   discountType String       @default("FIXED_AMOUNT") // PERCENTAGE, FIXED_AMOUNT
   value       Float        // Percentage (e.g. 20%) or Fixed amount (e.g. 50000)
@@ -85,6 +88,7 @@ model Voucher {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
+  event       Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
   orders      Order[]
 
   @@map("vouchers")

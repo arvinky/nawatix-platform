@@ -125,6 +125,7 @@ export class EventsService {
           select: { id: true, name: true, organizationName: true },
         },
         ticketCategories: true,
+        vouchers: true,
         _count: {
           select: { orders: true, participants: true },
         },
