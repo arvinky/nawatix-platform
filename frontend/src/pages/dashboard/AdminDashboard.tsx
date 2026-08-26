@@ -60,7 +60,7 @@ export const AdminDashboard: React.FC = () => {
 
   const { data: allEvents, isLoading: isLoadingEvents } = useQuery<Event[]>({
     queryKey: ['adminAllEvents'],
-    queryFn: async () => axiosClient.get('/api/events'),
+    queryFn: async () => axiosClient.get('/api/events/dashboard/my-events'),
     enabled: activeTab === 'events',
   });
 

@@ -37,6 +37,15 @@ export class EventsController {
     return this.eventsService.findAllPublic({ search, sportCategory, location, status });
   }
 
+  @Get('dashboard/my-events')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ORGANIZER)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Organizer/Admin: Get dashboard events with full details' })
+  async getDashboardEvents(@CurrentUser() user: any) {
+    return this.eventsService.findDashboardEvents(user);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Public: Get deep event detail including organizer profile and ticket classes' })
   async findOne(@Param('id') id: string) {

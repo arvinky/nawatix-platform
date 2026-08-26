@@ -94,7 +94,7 @@ export const OrganizerDashboard: React.FC = () => {
 
   const { data: events, isLoading: isLoadingEvents } = useQuery<Event[]>({
     queryKey: ['myOrgEvents'],
-    queryFn: async () => axiosClient.get(`/api/events?organizerId=${user?.id}`),
+    queryFn: async () => axiosClient.get(`/api/events/dashboard/my-events`),
   });
 
   const { data: participants, isLoading: isLoadingParticipants } = useQuery<Participant[]>({
