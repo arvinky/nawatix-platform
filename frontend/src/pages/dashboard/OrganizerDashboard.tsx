@@ -81,7 +81,7 @@ export const OrganizerDashboard: React.FC = () => {
   const [searchResults, setSearchResults] = useState<Participant[]>([]);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [selectedParticipantForBib, setSelectedParticipantForBib] = useState<Participant | null>(null);
-  const [bibInput, setBibInput] = useState<string>('');
+
   const [isVerifyingBib, setIsVerifyingBib] = useState<boolean>(false);
 
   const { data: stats, isLoading: isLoadingStats } = useQuery<DashboardStats>({
