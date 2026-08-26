@@ -9,41 +9,28 @@ import { EmptyState } from '../../components/common/EmptyState';
 import { useLanguage } from '../../context/LanguageContext';
 import { Search, Filter, RefreshCw, Calendar, Tag } from 'lucide-react';
 
-const SPORT_CATEGORIES: { label: string; value: string }[] = [
-  { label: 'All Categories', value: '' },
-  { label: 'Running', value: 'RUNNING' },
-  { label: 'Cycling', value: 'CYCLING' },
-  { label: 'Badminton', value: 'BADMINTON' },
-  { label: 'Basketball', value: 'BASKETBALL' },
-  { label: 'Volleyball', value: 'VOLLEYBALL' },
-  { label: 'Football', value: 'FOOTBALL' },
-  { label: 'Futsal', value: 'FUTSAL' },
-  { label: 'Swimming', value: 'SWIMMING' },
-  { label: 'Martial Arts', value: 'MARTIAL_ARTS' },
-  { label: 'Others', value: 'OTHERS' },
-];
+
 
 export const EventListPage: React.FC = () => {
   const { t, language } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialSport = searchParams.get('sportCategory') || '';
+  const initialMonth = searchParams.get('month') || '';
   const initialSearch = searchParams.get('search') || '';
   const organizerId = searchParams.get('organizerId') || '';
 
   const [searchQuery, setSearchQuery] = useState<string>(initialSearch);
-  const [selectedSport, setSelectedSport] = useState<string>(initialSport);
+  const [selectedMonth, setSelectedMonth] = useState<string>(initialMonth);
   const [selectedStatus, setSelectedStatus] = useState<string>('');
 
   useEffect(() => {
-    if (initialSport !== selectedSport) setSelectedSport(initialSport);
+    if (initialMonth !== selectedMonth) setSelectedMonth(initialMonth);
     if (initialSearch !== searchQuery) setSearchQuery(initialSearch);
   }, [searchParams]);
 
   const { data: events, isLoading, refetch, isFetching } = useQuery<Event[]>({
-    queryKey: ['allEvents', selectedSport, selectedStatus, organizerId],
+    queryKey: ['allEvents', selectedStatus, organizerId],
     queryFn: async () => {
       const params = new URLSearchParams();
-      if (selectedSport) params.append('sportCategory', selectedSport);
       if (selectedStatus) params.append('status', selectedStatus);
       if (organizerId) params.append('organizerId', organizerId);
       return axiosClient.get(`/api/events?${params.toString()}`);
@@ -59,11 +46,16 @@ export const EventListPage: React.FC = () => {
       event.description?.toLowerCase().includes(term) ||
       event.sportCategory.toLowerCase().includes(term)
     );
+  }).filter((event) => {
+    if (!selectedMonth) return true;
+    const d = new Date(event.date);
+    const mStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    return mStr === selectedMonth;
   });
 
   const resetFilters = () => {
     setSearchQuery('');
-    setSelectedSport('');
+    setSelectedMonth('');
     setSelectedStatus('');
     setSearchParams({});
   };
@@ -104,26 +96,35 @@ export const EventListPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Sport Category Select */}
+        {/* Month Select */}
         <div>
           <label className="block text-xs font-semibold uppercase text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1.5">
-            <Tag className="w-3.5 h-3.5 text-primary-500" />
-            <span>Sport Category</span>
+            <Calendar className="w-3.5 h-3.5 text-primary-500" />
+            <span>{language === 'id' ? 'Bulan Event' : 'Event Month'}</span>
           </label>
           <select
-            value={selectedSport}
+            value={selectedMonth}
             onChange={(e) => {
-              setSelectedSport(e.target.value);
-              if (e.target.value) setSearchParams({ sportCategory: e.target.value });
+              setSelectedMonth(e.target.value);
+              if (e.target.value) setSearchParams({ month: e.target.value });
               else setSearchParams({});
             }}
             className="saas-input"
           >
-            {SPORT_CATEGORIES.map((cat) => (
-              <option key={cat.value} value={cat.value}>
-                {cat.label}
-              </option>
-            ))}
+            <option value="">{language === 'id' ? 'Semua Bulan' : 'All Months'}</option>
+            {Array.from(new Set((events || []).map(e => {
+              const d = new Date(e.date);
+              return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+            }))).sort().map(val => {
+              const [y, m] = val.split('-');
+              const date = new Date(parseInt(y), parseInt(m) - 1);
+              const label = date.toLocaleDateString(language === 'id' ? 'id-ID' : 'en-US', { month: 'long', year: 'numeric' });
+              return (
+                <option key={val} value={val}>
+                  {label}
+                </option>
+              );
+            })}
           </select>
         </div>
 
