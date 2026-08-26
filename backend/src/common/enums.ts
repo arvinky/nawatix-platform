@@ -1,6 +1,7 @@
 export enum UserRole {
   SUPER_ADMIN = 'SUPER_ADMIN',
   ADMIN = 'ADMIN',
+  ORGANIZER = 'ORGANIZER',
   USER = 'USER'
 }
 export enum SportCategory {

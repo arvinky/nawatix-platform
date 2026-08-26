@@ -94,46 +94,7 @@ async function main() {
   }
   console.log('✅ Created 10 User accounts.');
 
-  // 4. Create Vouchers
-  const voucher1 = await prisma.voucher.create({
-    data: {
-      code: 'ATHLETIX2026',
-      discountType: DiscountType.FIXED_AMOUNT,
-      value: 50000,
-      usageLimit: 500,
-      usedCount: 2,
-      startDate: new Date(),
-      expiredDate: new Date('2026-12-31T23:59:59Z'),
-      status: VoucherStatus.ACTIVE,
-    },
-  });
-
-  const voucher2 = await prisma.voucher.create({
-    data: {
-      code: 'SPORTPROMO',
-      discountType: DiscountType.PERCENTAGE,
-      value: 15,
-      usageLimit: 200,
-      usedCount: 1,
-      startDate: new Date(),
-      expiredDate: new Date('2026-12-31T23:59:59Z'),
-      status: VoucherStatus.ACTIVE,
-    },
-  });
-
-  const voucher3 = await prisma.voucher.create({
-    data: {
-      code: 'VIPRUN50',
-      discountType: DiscountType.FIXED_AMOUNT,
-      value: 100000,
-      usageLimit: 50,
-      usedCount: 0,
-      startDate: new Date(),
-      expiredDate: new Date('2026-12-31T23:59:59Z'),
-      status: VoucherStatus.ACTIVE,
-    },
-  });
-  console.log('✅ Created sample Vouchers.');
+  // Vouchers will be created after Events
 
   // 5. Create Events across different sports categories
   const eventsData = [
@@ -258,6 +219,50 @@ async function main() {
     createdEvents.push(event);
   }
   console.log(`✅ Created ${createdEvents.length} Events with Early Bird, Regular, and VIP Ticket Categories.`);
+
+  // 4. Create Vouchers (now linked to specific events)
+  const voucher1 = await prisma.voucher.create({
+    data: {
+      eventId: createdEvents[0].id,
+      code: 'ATHLETIX2026',
+      discountType: DiscountType.FIXED_AMOUNT,
+      value: 50000,
+      usageLimit: 500,
+      usedCount: 2,
+      startDate: new Date(),
+      expiredDate: new Date('2026-12-31T23:59:59Z'),
+      status: VoucherStatus.ACTIVE,
+    },
+  });
+
+  const voucher2 = await prisma.voucher.create({
+    data: {
+      eventId: createdEvents[1].id,
+      code: 'SPORTPROMO',
+      discountType: DiscountType.PERCENTAGE,
+      value: 15,
+      usageLimit: 200,
+      usedCount: 1,
+      startDate: new Date(),
+      expiredDate: new Date('2026-12-31T23:59:59Z'),
+      status: VoucherStatus.ACTIVE,
+    },
+  });
+
+  const voucher3 = await prisma.voucher.create({
+    data: {
+      eventId: createdEvents[0].id,
+      code: 'VIPRUN50',
+      discountType: DiscountType.FIXED_AMOUNT,
+      value: 100000,
+      usageLimit: 50,
+      usedCount: 0,
+      startDate: new Date(),
+      expiredDate: new Date('2026-12-31T23:59:59Z'),
+      status: VoucherStatus.ACTIVE,
+    },
+  });
+  console.log('✅ Created sample Vouchers.');
 
   // 6. Create Sample Orders, Paid Participants, Registration Numbers, and BIBs
   const marathomEvent = createdEvents[0]; // Jakarta International Marathon
