@@ -39,6 +39,7 @@ import {
   Loader2,
   Tag,
   Trash2,
+  Edit3,
 } from 'lucide-react';
 
 const createEventSchema = z.object({
@@ -71,6 +72,7 @@ export const OrganizerDashboard: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'overview' | 'events' | 'orders' | 'participants' | 'checkin' | 'reports'>('overview');
   const [isNewEventModalOpen, setIsNewEventModalOpen] = useState<boolean>(false);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [selectedEventForTicket, setSelectedEventForTicket] = useState<string | null>(null);
   const [selectedEventForVoucher, setSelectedEventForVoucher] = useState<string | null>(null);
   const [newVoucher, setNewVoucher] = useState({ code: '', discountType: 'FIXED_AMOUNT', value: 0, usageLimit: 100, expiredDate: '' });
@@ -133,15 +135,38 @@ export const OrganizerDashboard: React.FC = () => {
         }
       }
 
-      await axiosClient.post('/api/events', { ...data, banner: bannerUrl });
-      showToast('New tournament published successfully!', 'success');
+      if (editingEvent) {
+        await axiosClient.put(`/api/events/${editingEvent.id}`, { ...data, banner: bannerUrl });
+        showToast('Tournament updated successfully!', 'success');
+      } else {
+        await axiosClient.post('/api/events', { ...data, banner: bannerUrl });
+        showToast('New tournament published successfully!', 'success');
+      }
       queryClient.invalidateQueries({ queryKey: ['myOrgEvents'] });
       setIsNewEventModalOpen(false);
+      setEditingEvent(null);
       resetEventForm();
       setBannerFile(null);
     } catch (err: any) {
-      showToast(err.displayMessage || 'Failed to create event', 'error');
+      showToast(err.displayMessage || 'Failed to save event', 'error');
     }
+  };
+
+  const handleEditEventClick = (e: Event) => {
+    setEditingEvent(e);
+    resetEventForm({
+      name: e.name,
+      sportCategory: e.sportCategory,
+      date: new Date(e.date).toISOString().slice(0, 16),
+      location: e.location,
+      description: e.description,
+      banner: e.banner,
+      organizerName: e.organizerName || '',
+      organizerPhone: e.organizerPhone || '',
+      organizerWebsite: e.organizerWebsite || '',
+    });
+    setBannerFile(null);
+    setIsNewEventModalOpen(true);
   };
 
   const handleDeleteEvent = async (id: string) => {
@@ -581,12 +606,20 @@ export const OrganizerDashboard: React.FC = () => {
                   </div>
 
                   <div className="pt-3 flex justify-between items-center">
-                    <button
-                      onClick={() => handleDeleteEvent(evt.id)}
-                      className="text-xs text-rose-500 font-bold hover:underline flex items-center gap-1"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" /> {t('org.event.delete')}
-                    </button>
+                    <div className="flex gap-4">
+                      <button
+                        onClick={() => handleEditEventClick(evt)}
+                        className="text-xs text-blue-500 font-bold hover:underline flex items-center gap-1"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" /> Edit Event
+                      </button>
+                      <button
+                        onClick={() => handleDeleteEvent(evt.id)}
+                        className="text-xs text-rose-500 font-bold hover:underline flex items-center gap-1"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> {t('org.event.delete')}
+                      </button>
+                    </div>
                     <a href={`/events/${evt.id}`} target="_blank" rel="noreferrer" className="saas-button-secondary text-xs py-2 px-4">
                       {t('org.event.viewPublic')}
                     </a>
@@ -879,8 +912,12 @@ export const OrganizerDashboard: React.FC = () => {
       {/* Modal: Publish New Tournament */}
       <Modal
         isOpen={isNewEventModalOpen}
-        onClose={() => setIsNewEventModalOpen(false)}
-        title="Publish New Sports Event"
+        onClose={() => {
+          setIsNewEventModalOpen(false);
+          setEditingEvent(null);
+          resetEventForm();
+        }}
+        title={editingEvent ? 'Edit Tournament' : 'Publish New Sports Event'}
         maxWidth="max-w-xl"
       >
         <form onSubmit={handleEventSubmit(onAddEvent as any)} className="space-y-4 py-2">
