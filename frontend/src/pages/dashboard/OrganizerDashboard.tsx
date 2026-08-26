@@ -570,41 +570,6 @@ export const OrganizerDashboard: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Vouchers section */}
-                  <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Promo Codes</span>
-                      <button
-                        onClick={() => setSelectedEventForVoucher(evt.id)}
-                        className="text-xs text-primary-500 font-bold hover:underline flex items-center gap-1"
-                      >
-                        <Plus className="w-3.5 h-3.5" /> Tambah Voucher
-                      </button>
-                    </div>
-                    {evt.vouchers && evt.vouchers.length > 0 ? (
-                      <div className="grid grid-cols-1 gap-2">
-                        {evt.vouchers.map((v) => (
-                          <div key={v.id} className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 flex justify-between items-center text-xs">
-                            <div>
-                              <span className="font-bold text-slate-800 dark:text-slate-200 block uppercase">{v.code}</span>
-                              <span className="text-[10px] text-slate-400">Terpakai {v.usedCount} / Kuota {v.usageLimit}</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <span className="font-extrabold text-emerald-500">
-                                {v.discountType === 'FIXED_AMOUNT' ? `Rp ${v.value.toLocaleString('id-ID')}` : `${v.value}%`}
-                              </span>
-                              <button onClick={() => handleDeleteVoucher(v.id)} className="text-rose-500 hover:text-rose-600 p-1 rounded hover:bg-rose-500/10">
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <span className="text-xs text-slate-400 italic">Belum ada kode promo</span>
-                    )}
-                  </div>
-
                   <div className="pt-3 flex justify-between items-center">
                     <div className="flex gap-4">
                       <button
