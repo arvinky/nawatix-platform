@@ -215,15 +215,15 @@ export const HomePage: React.FC = () => {
             <h2 className="text-3xl font-bold dark:text-white tracking-tight mb-4">{t('market.trust.title')}</h2>
             <div className="flex flex-wrap items-center gap-8 py-8">
               <div>
-                <p className="text-4xl font-extrabold dark:text-white mb-1">120+</p>
+                <p className="text-4xl font-extrabold dark:text-white mb-1">50+</p>
                 <p className="text-[14px] text-text-secondary font-medium">Event</p>
               </div>
               <div>
-                <p className="text-4xl font-extrabold dark:text-white mb-1">35+</p>
+                <p className="text-4xl font-extrabold dark:text-white mb-1">10+</p>
                 <p className="text-[14px] text-text-secondary font-medium">Kota</p>
               </div>
               <div>
-                <p className="text-4xl font-extrabold dark:text-white mb-1">18+</p>
+                <p className="text-4xl font-extrabold dark:text-white mb-1">15+</p>
                 <p className="text-[14px] text-text-secondary font-medium">Organizer</p>
               </div>
             </div>
