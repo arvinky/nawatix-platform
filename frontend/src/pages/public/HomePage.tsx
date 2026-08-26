@@ -234,7 +234,7 @@ export const HomePage: React.FC = () => {
 
           {isLoadingEvents ? (
             <CardSkeleton count={3} />
-          ) : !events || events.data?.length === 0 ? (
+          ) : !events || events.length === 0 ? (
             <EmptyState
               title={t('home.empty.title')}
               description={t('home.empty.desc')}
@@ -246,7 +246,7 @@ export const HomePage: React.FC = () => {
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {events.data?.slice(0, 6).map((evt: Event) => (
+              {events.slice(0, 6).map((evt: Event) => (
                 <EventCard key={evt.id} event={evt} />
               ))}
             </div>
