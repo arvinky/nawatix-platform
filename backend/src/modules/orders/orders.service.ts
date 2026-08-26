@@ -46,7 +46,9 @@ export class OrdersService {
       }
     }
 
-    const total = Math.max(0, subtotal - discount);
+    const platformFee = Math.round(subtotal * 0.015);
+    const paymentFee = 4500;
+    const total = Math.max(0, subtotal - discount + platformFee + paymentFee);
     const invoice = await this.generateInvoiceNumber();
 
     const order = await this.prisma.order.create({
