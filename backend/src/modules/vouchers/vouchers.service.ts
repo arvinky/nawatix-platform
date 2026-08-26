@@ -33,7 +33,9 @@ export class VouchersService {
       throw new BadRequestException('This voucher code is not valid for this event.');
     }
 
-    if (voucher.status !== VoucherStatus.ACTIVE || new Date(voucher.expiredDate) < new Date()) {
+    const expiry = new Date(voucher.expiredDate);
+    expiry.setUTCHours(23, 59, 59, 999);
+    if (voucher.status !== VoucherStatus.ACTIVE || expiry < new Date()) {
       throw new BadRequestException('This voucher has expired or is disabled.');
     }
 
