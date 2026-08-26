@@ -180,6 +180,7 @@ export const ParticipantDashboard: React.FC = () => {
                   <th className="py-4 px-6">Total (IDR)</th>
                   <th className="py-4 px-6">Status</th>
                   <th className="py-4 px-6">Date</th>
+                  <th className="py-4 px-6">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80 text-sm">
@@ -197,6 +198,17 @@ export const ParticipantDashboard: React.FC = () => {
                       </span>
                     </td>
                     <td className="py-4 px-6 text-xs text-slate-400">{new Date(o.createdAt).toLocaleDateString()}</td>
+                    <td className="py-4 px-6">
+                      {o.status === 'PENDING' && o.snapRedirectUrl ? (
+                        <a href={o.snapRedirectUrl} className="saas-button-primary text-[10px] py-1.5 px-3 bg-amber-500 hover:bg-amber-600 text-white shadow-none">
+                          Pay Now
+                        </a>
+                      ) : (
+                        <a href={`/order-success/${o.id}`} className="text-primary-500 text-[11px] font-bold hover:underline">
+                          Details
+                        </a>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
