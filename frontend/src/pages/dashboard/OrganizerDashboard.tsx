@@ -179,7 +179,7 @@ export const OrganizerDashboard: React.FC = () => {
   const onAddTicket = async (data: CreateTicketForm) => {
     if (!selectedEventForTicket) return;
     try {
-      await axiosClient.post(`/api/tickets/${selectedEventForTicket}`, data);
+      await axiosClient.post(`/api/tickets`, { ...data, eventId: selectedEventForTicket });
       showToast('New ticket tier added to tournament!', 'success');
       queryClient.invalidateQueries({ queryKey: ['myOrgEvents'] });
       setSelectedEventForTicket(null);
