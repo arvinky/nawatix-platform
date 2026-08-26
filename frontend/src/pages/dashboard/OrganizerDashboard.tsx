@@ -238,20 +238,13 @@ export const OrganizerDashboard: React.FC = () => {
   };
 
   // Verify and Assign BIB
-  const handleVerifyBib = async () => {
-    if (!selectedParticipantForBib || !bibInput.trim()) {
-      showToast('Please specify an official racing BIB number e.g. 1057', 'error');
-      return;
-    }
+  const handleVerifyBib = async (participant: Participant) => {
     setIsVerifyingBib(true);
     try {
       await axiosClient.post('/api/registration/verify', {
-        participantIdOrRegNumber: selectedParticipantForBib.registrationNumber,
-        bibNumber: bibInput.trim(),
+        participantIdOrRegNumber: participant.registrationNumber,
       });
-      showToast(`BIB #${bibInput.trim()} assigned and athlete check-in COMPLETED!`, 'success');
-      setSelectedParticipantForBib(null);
-      setBibInput('');
+      showToast(`Athlete check-in COMPLETED! BIB Number generated automatically.`, 'success');
       // Refresh search results & stats
       if (searchRegQuery.trim()) {
         const res = await axiosClient.get<any, Participant[]>(`/api/registration/search?query=${encodeURIComponent(searchRegQuery.trim())}`);
@@ -676,23 +669,9 @@ export const OrganizerDashboard: React.FC = () => {
 
                     {p.status !== 'COMPLETED' ? (
                       <div className="space-y-3 pt-2">
-                        <label className="block text-sm font-bold text-slate-900 dark:text-white">
-                          {t('org.modal.bib.bibLabel')}
-                        </label>
-                        <input
-                          type="text"
-                          value={selectedParticipantForBib?.id === p.id ? bibInput : ''}
-                          onChange={(e) => {
-                            setSelectedParticipantForBib(p);
-                            setBibInput(e.target.value);
-                          }}
-                          onClick={() => setSelectedParticipantForBib(p)}
-                          placeholder={t('org.modal.bib.input')}
-                          className="saas-input py-3 font-mono font-bold text-rose-500 text-lg"
-                        />
                         <button
-                          onClick={handleVerifyBib}
-                          disabled={isVerifyingBib || selectedParticipantForBib?.id !== p.id || !bibInput}
+                          onClick={() => handleVerifyBib(p)}
+                          disabled={isVerifyingBib}
                           className="saas-button-primary bg-emerald-600 hover:bg-emerald-500 w-full py-3 font-bold text-sm shadow-md disabled:opacity-50"
                         >
                           {isVerifyingBib ? t('org.checkin.searching') : t('org.modal.bib.submit')}

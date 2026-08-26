@@ -166,7 +166,7 @@ export class PaymentsService {
                 name: order.user.name,
                 email: order.user.email,
                 phone: order.user.phone,
-                status: RegistrationStatus.COMPLETED,
+                status: RegistrationStatus.NOT_REGISTERED_YET,
               },
             });
 

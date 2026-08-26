@@ -72,16 +72,33 @@ export class RegistrationService {
       throw new BadRequestException(`Participant is already verified with BIB #${participant.bibNumber}.`);
     }
 
-    // Verify BIB uniqueness for this event
-    const bibExists = await this.prisma.bib.findFirst({
-      where: {
-        eventId: participant.eventId,
-        bibNumber: dto.bibNumber.trim(),
-      },
-    });
+    let finalBibNumber = dto.bibNumber?.trim();
 
-    if (bibExists) {
-      throw new BadRequestException(`BIB Number #${dto.bibNumber} is already assigned to another participant in this event!`);
+    if (!finalBibNumber) {
+      // Auto-generate unique 3-5 digit BIB number
+      let isUnique = false;
+      while (!isUnique) {
+        // Generate random number between 100 and 99999
+        finalBibNumber = Math.floor(100 + Math.random() * 99899).toString();
+        const existing = await this.prisma.bib.findFirst({
+          where: { eventId: participant.eventId, bibNumber: finalBibNumber },
+        });
+        if (!existing) {
+          isUnique = true;
+        }
+      }
+    } else {
+      // Verify BIB uniqueness if manually provided
+      const bibExists = await this.prisma.bib.findFirst({
+        where: {
+          eventId: participant.eventId,
+          bibNumber: finalBibNumber,
+        },
+      });
+
+      if (bibExists) {
+        throw new BadRequestException(`BIB Number #${finalBibNumber} is already assigned to another participant in this event!`);
+      }
     }
 
     return this.prisma.$transaction(async (tx) => {
@@ -89,7 +106,7 @@ export class RegistrationService {
         where: { id: participant.id },
         data: {
           status: RegistrationStatus.COMPLETED,
-          bibNumber: dto.bibNumber.trim(),
+          bibNumber: finalBibNumber,
           verifiedById: currentUser.id,
           verifiedAt: new Date(),
         },
@@ -104,7 +121,7 @@ export class RegistrationService {
         data: {
           eventId: participant.eventId,
           participantId: participant.id,
-          bibNumber: dto.bibNumber.trim(),
+          bibNumber: finalBibNumber,
           assignedAt: new Date(),
         },
       });

@@ -7,8 +7,8 @@ export class VerifyParticipantDto {
   @IsNotEmpty()
   participantIdOrRegNumber: string;
 
-  @ApiProperty({ example: '1057', description: 'BIB Number assigned during race pack collection' })
+  @ApiPropertyOptional({ example: '1057', description: 'BIB Number (optional, will be auto-generated if not provided)' })
   @IsString()
-  @IsNotEmpty()
-  bibNumber: string;
+  @IsOptional()
+  bibNumber?: string;
 }
