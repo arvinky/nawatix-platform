@@ -358,7 +358,7 @@ export const translations = {
     'market.hero.desc': 'Cari event olahraga di kotamu dan daftar langsung melalui NAWATIX.',
     'market.hero.search': 'Cari event, kota, atau olahraga...',
     
-    'market.featured.title': 'Event Pilihan',
+    'market.featured.title': 'Event Teratas',
     
     'market.discover.title': 'Temukan event berdasarkan olahraga',
     
@@ -742,7 +742,7 @@ export const translations = {
     'market.hero.desc': 'Search for sports events in your city and register directly through NAWATIX.',
     'market.hero.search': 'Search events, cities, or sports...',
     
-    'market.featured.title': 'Featured Events',
+    'market.featured.title': 'Top Events',
     
     'market.discover.title': 'Discover events by sport',
     

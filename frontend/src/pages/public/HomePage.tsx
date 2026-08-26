@@ -54,41 +54,9 @@ export const HomePage: React.FC = () => {
     { num: '06', title: t('market.hiw.6.title'), desc: t('market.hiw.6.desc') },
   ];
 
-  const mockUpcomingEvents: Event[] = [
-    {
-      id: 'mock1',
-      name: 'Jakarta City Run 2026',
-      sportCategory: 'RUNNING',
-      date: '2026-09-21T06:00:00Z',
-      location: 'Jakarta',
-      status: 'OPEN',
-      startingPrice: 150000,
-      organizerId: 'org1',
-      description: 'Jakarta City Run',
-    },
-    {
-      id: 'mock2',
-      name: 'Nusantara Football Cup',
-      sportCategory: 'FOOTBALL',
-      date: '2026-11-05T08:00:00Z',
-      location: 'Manahan Stadium, Solo',
-      status: 'OPEN',
-      startingPrice: 3500000,
-      organizerId: 'org2',
-      description: 'Nusantara Football Cup',
-    },
-    {
-      id: 'mock3',
-      name: 'Madiun Badminton Open',
-      sportCategory: 'BADMINTON',
-      date: '2026-11-12T09:00:00Z',
-      location: 'GOR Wilis, Madiun',
-      status: 'OPEN',
-      startingPrice: 100000,
-      organizerId: 'org3',
-      description: 'Madiun Badminton Open',
-    }
-  ];
+  const sortedEvents = events ? [...events].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) : [];
+  const topFeatured = sortedEvents[0];
+  const secondaryFeatured = sortedEvents.slice(1, 4);
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen font-sans">
@@ -144,58 +112,70 @@ export const HomePage: React.FC = () => {
           <h2 className="text-3xl font-bold dark:text-white tracking-tight">{t('market.featured.title')}</h2>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Main Featured */}
-          <Link to="/events" className="lg:col-span-8 group relative rounded-2xl overflow-hidden bg-[#111111] border border-border-light dark:border-border-dark shadow-lg block aspect-[4/3] lg:aspect-auto lg:h-[420px]">
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10"></div>
-            {/* Optional background image can go here */}
-            <div className="absolute inset-0 bg-primary-900/20 z-0"></div>
-            
-            <div className="absolute inset-0 z-20 p-8 sm:p-10 flex flex-col justify-end">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="px-3 py-1 bg-white text-black text-[12px] font-bold tracking-wider rounded-sm">RUNNING</span>
-                <span className="px-3 py-1 bg-primary-500 text-white text-[12px] font-bold tracking-wider rounded-sm flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span> DIBUKA
-                </span>
-              </div>
-              <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight group-hover:text-primary-400 transition-colors">
-                Jakarta International Marathon 2026
-              </h3>
-              <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-slate-300 text-[14px] sm:text-[15px] font-medium mb-6">
-                <div className="flex items-center gap-2"><Calendar className="w-4 h-4"/> 16 SEP 2026</div>
-                <div className="flex items-center gap-2"><MapPin className="w-4 h-4"/> Gelora Bung Karno, Jakarta</div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-[13px] text-slate-400">{t('card.startingFrom')}</p>
-                  <p className="text-2xl font-bold text-white">Rp250.000</p>
+        {isLoadingEvents ? (
+          <CardSkeleton count={4} />
+        ) : !topFeatured ? (
+          <EmptyState title={t('home.empty.title')} description={t('home.empty.desc')} action={<></>} />
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Main Featured */}
+            <Link to={`/events/${topFeatured.id}`} className="lg:col-span-8 group relative rounded-2xl overflow-hidden bg-[#111111] border border-border-light dark:border-border-dark shadow-lg block aspect-[4/3] lg:aspect-auto lg:h-[420px]">
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10"></div>
+              {/* Optional background image can go here */}
+              <div className="absolute inset-0 bg-primary-900/20 z-0"></div>
+              
+              <div className="absolute inset-0 z-20 p-8 sm:p-10 flex flex-col justify-end">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="px-3 py-1 bg-white text-black text-[12px] font-bold tracking-wider rounded-sm uppercase">{topFeatured.sportCategory}</span>
+                  <span className="px-3 py-1 bg-primary-500 text-white text-[12px] font-bold tracking-wider rounded-sm flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span> {topFeatured.status === 'OPEN' ? 'DIBUKA' : topFeatured.status}
+                  </span>
                 </div>
-                <div className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <ArrowRight className="w-5 h-5" />
+                <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight group-hover:text-primary-400 transition-colors">
+                  {topFeatured.name}
+                </h3>
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-slate-300 text-[14px] sm:text-[15px] font-medium mb-6">
+                  <div className="flex items-center gap-2"><Calendar className="w-4 h-4"/> {new Date(topFeatured.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+                  <div className="flex items-center gap-2"><MapPin className="w-4 h-4"/> {topFeatured.location}</div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[13px] text-slate-400">{t('card.startingFrom')}</p>
+                    <p className="text-2xl font-bold text-white">Rp{topFeatured.startingPrice?.toLocaleString('id-ID')}</p>
+                  </div>
+                  <div className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <ArrowRight className="w-5 h-5" />
+                  </div>
                 </div>
               </div>
-            </div>
-          </Link>
+            </Link>
 
-          {/* Secondary Featured List */}
-          <div className="lg:col-span-4 flex flex-col gap-6">
-            {mockUpcomingEvents.map((evt, idx) => (
-              <Link key={evt.id} to={`/events/${evt.id}`} className="flex-1 group bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-center">
-                <span className="text-[11px] font-bold text-primary-500 tracking-wider mb-2 block">{evt.sportCategory}</span>
-                <h4 className="text-[17px] font-bold dark:text-white leading-snug mb-3 group-hover:text-primary-500 transition-colors line-clamp-2">
-                  {evt.name}
-                </h4>
-                <div className="flex items-center justify-between mt-auto pt-4 border-t border-border-light dark:border-border-dark">
-                  <div className="text-[13px] text-text-secondary font-medium">
-                    {new Date(evt.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+            {/* Secondary Featured List */}
+            <div className="lg:col-span-4 flex flex-col gap-6">
+              {secondaryFeatured.map((evt) => (
+                <Link key={evt.id} to={`/events/${evt.id}`} className="flex-1 group bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-center">
+                  <span className="text-[11px] font-bold text-primary-500 tracking-wider mb-2 block uppercase">{evt.sportCategory}</span>
+                  <h4 className="text-[17px] font-bold dark:text-white leading-snug mb-3 group-hover:text-primary-500 transition-colors line-clamp-2">
+                    {evt.name}
+                  </h4>
+                  <div className="flex items-center justify-between mt-auto pt-4 border-t border-border-light dark:border-border-dark">
+                    <div className="text-[13px] text-text-secondary font-medium">
+                      {new Date(evt.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </div>
+                    <div className="text-[13px] font-bold dark:text-white">
+                      Rp{evt.startingPrice?.toLocaleString('id-ID')}
+                    </div>
                   </div>
-                  <div className="text-[13px] font-bold dark:text-white">
-                    Rp{evt.startingPrice?.toLocaleString('id-ID')}
-                  </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))}
+            </div>
           </div>
+        )}
+
+        <div className="mt-12 text-center">
+          <Link to="/events" className="inline-flex items-center gap-2 px-8 py-3 rounded-full border-2 border-primary-500 text-primary-600 dark:text-primary-400 font-bold hover:bg-primary-500 hover:text-white transition-colors">
+            Cari event lainnya <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </section>
 
