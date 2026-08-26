@@ -199,52 +199,6 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. DISCOVER (API DATA) */}
-      <section className="py-24 bg-surface-light dark:bg-[#111111] border-y border-border-light dark:border-border-dark">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-            <div>
-              <h2 className="text-3xl font-bold dark:text-white tracking-tight mb-2">{t('market.discover.title')}</h2>
-            </div>
-            
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none w-full md:w-auto">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat.value}
-                  onClick={() => setSelectedCategory(cat.value)}
-                  className={`px-5 py-2.5 rounded-full text-[13px] font-semibold transition-all shrink-0 border ${
-                    selectedCategory === cat.value
-                      ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white'
-                      : 'bg-transparent text-text-secondary border-border-light dark:border-border-dark hover:border-black dark:hover:border-white'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {isLoadingEvents ? (
-            <CardSkeleton count={3} />
-          ) : !events || events.length === 0 ? (
-            <EmptyState
-              title={t('home.empty.title')}
-              description={t('home.empty.desc')}
-              action={
-                <button onClick={() => setSelectedCategory('ALL')} className="saas-button-primary text-xs py-2 px-4">
-                  {t('home.empty.action')}
-                </button>
-              }
-            />
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {events.slice(0, 6).map((evt: Event) => (
-                <EventCard key={evt.id} event={evt} />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
 
       {/* 4. HOW IT WORKS */}
       <section className="py-32 max-w-7xl mx-auto px-6">
