@@ -190,16 +190,16 @@ export const HomePage: React.FC = () => {
           {steps.map((step, idx) => (
             <motion.div 
               key={idx}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: idx * 0.1 }}
-              viewport={{ once: true }}
-              className="relative pl-12"
+              transition={{ duration: 0.6, delay: (idx % 3) * 0.15, ease: "easeOut" }}
+              viewport={{ once: true, amount: 0.1 }}
+              className="relative pl-12 group"
             >
-              <div className="absolute left-0 top-0 text-5xl font-extrabold text-border-light dark:text-[#222222] select-none -z-10">
+              <div className="absolute left-0 top-0 text-5xl font-extrabold text-border-light dark:text-[#222222] select-none -z-10 transition-colors group-hover:text-primary-100 dark:group-hover:text-primary-900/30">
                 {step.num}
               </div>
-              <h3 className="text-lg font-bold dark:text-white mb-2 pt-2">{step.title}</h3>
+              <h3 className="text-lg font-bold dark:text-white mb-2 pt-2 group-hover:text-primary-500 transition-colors">{step.title}</h3>
               <p className="text-[15px] text-text-secondary dark:text-text-darkSecondary leading-relaxed">
                 {step.desc}
               </p>
