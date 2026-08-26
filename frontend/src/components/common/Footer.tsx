@@ -65,13 +65,13 @@ export const Footer: React.FC = () => {
                 <MapPin className="w-4 h-4 text-text-muted shrink-0 mt-0.5" />
                 <span>9G3M+88Q, Jl. Panorama Raya, Pandean, Kec. Taman, Kota Madiun, Jawa Timur 63133</span>
               </li>
-              <li className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-text-muted shrink-0" />
-                <span>+62 811 8888 2026</span>
+              <li className="flex items-center space-x-3 text-slate-500 dark:text-slate-400">
+                <Phone className="h-5 w-5 text-primary-500 flex-shrink-0" />
+                <span>+628579010663</span>
               </li>
-              <li className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-text-muted shrink-0" />
-                <span>support@nawatix.com</span>
+              <li className="flex items-center space-x-3 text-slate-500 dark:text-slate-400">
+                <Mail className="h-5 w-5 text-primary-500 flex-shrink-0" />
+                <span>nawainspirasi@gmail.com</span>
               </li>
             </ul>
           </div>

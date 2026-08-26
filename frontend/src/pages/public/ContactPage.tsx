@@ -39,11 +39,11 @@ export const ContactPage: React.FC = () => {
             </div>
             <div className="flex items-center gap-3.5 text-slate-300">
               <Phone className="w-5 h-5 text-primary-400 shrink-0" />
-              <span>+62 811 8888 2026</span>
+              <span>+628579010663</span>
             </div>
             <div className="flex items-center gap-3.5 text-slate-300">
               <Mail className="w-5 h-5 text-primary-400 shrink-0" />
-              <span>support@nawatix.com</span>
+              <span>nawainspirasi@gmail.com</span>
             </div>
           </div>
         </div>
