@@ -353,8 +353,8 @@ export const translations = {
 
     // Marketplace
     'market.hero.title': 'EVENT OLAHRAGA DI INDONESIA',
-    'market.hero.sub1': 'Temukan event.',
-    'market.hero.sub2': 'Siap bertanding.',
+    'market.hero.sub1': 'Gateway to',
+    'market.hero.sub2': 'every game.',
     'market.hero.desc': 'Cari event olahraga di kotamu dan daftar langsung melalui NAWATIX.',
     'market.hero.search': 'Cari event, kota, atau olahraga...',
     
@@ -737,8 +737,8 @@ export const translations = {
 
     // Marketplace
     'market.hero.title': 'SPORTS EVENTS IN INDONESIA',
-    'market.hero.sub1': 'Find your event.',
-    'market.hero.sub2': 'Get ready to race.',
+    'market.hero.sub1': 'Gateway to',
+    'market.hero.sub2': 'every game.',
     'market.hero.desc': 'Search for sports events in your city and register directly through NAWATIX.',
     'market.hero.search': 'Search events, cities, or sports...',
     

@@ -97,26 +97,26 @@ export const HomePage: React.FC = () => {
       <section className="relative pt-32 pb-24 border-b border-border-light dark:border-border-dark overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-surface-light to-background-light dark:from-surface-dark dark:to-background-dark -z-10"></div>
         <div className="max-w-5xl mx-auto px-6 text-center">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
             <span className="text-[13px] font-bold tracking-widest uppercase text-text-secondary dark:text-text-darkSecondary mb-6 block">
               {t('market.hero.title')}
             </span>
           </motion.div>
           <motion.h1 
-            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-text-primary dark:text-text-darkPrimary tracking-tight leading-[1.1] mb-6"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}
+            className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-text-primary dark:text-text-darkPrimary tracking-tight leading-[1.1] mb-6 uppercase"
           >
             {t('market.hero.sub1')} <br className="hidden sm:block"/>
             <span className="text-primary-500">{t('market.hero.sub2')}</span>
           </motion.h1>
           <motion.p 
-            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}
             className="text-lg md:text-xl text-text-secondary dark:text-text-darkSecondary max-w-2xl mx-auto mb-12"
           >
             {t('market.hero.desc')}
           </motion.p>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }} className="max-w-3xl mx-auto">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} className="max-w-3xl mx-auto">
             <form onSubmit={handleSearchSubmit} className="relative flex items-center w-full h-16 sm:h-20 bg-white dark:bg-[#151515] rounded-2xl border-2 border-border-light dark:border-border-dark shadow-xl hover:border-primary-500/50 dark:hover:border-primary-500/50 transition-colors group focus-within:border-primary-500 dark:focus-within:border-primary-500 overflow-hidden">
               <div className="pl-6 text-text-muted">
                 <Search className="w-6 h-6" />
@@ -134,14 +134,6 @@ export const HomePage: React.FC = () => {
                 </button>
               </div>
             </form>
-            
-            <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
-              {QUICK_TAGS.map((tag) => (
-                <Link key={tag} to={`/events?search=${tag}`} className="px-4 py-2 rounded-full border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark text-[13px] font-medium text-text-secondary hover:text-primary-500 hover:border-primary-500/30 transition-colors">
-                  {tag}
-                </Link>
-              ))}
-            </div>
           </motion.div>
         </div>
       </section>
