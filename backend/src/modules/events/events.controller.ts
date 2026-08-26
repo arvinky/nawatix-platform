@@ -15,7 +15,7 @@ export class EventsController {
 
   @Get('dashboard/my-events')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ORGANIZER)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Organizer/Admin: List managed events with order and participant analytics' })
   async getDashboardEvents(@CurrentUser() user: any) {
@@ -35,15 +35,6 @@ export class EventsController {
     @Query('status') status?: EventStatus,
   ) {
     return this.eventsService.findAllPublic({ search, sportCategory, location, status });
-  }
-
-  @Get('dashboard/my-events')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ORGANIZER)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Organizer/Admin: Get dashboard events with full details' })
-  async getDashboardEvents(@CurrentUser() user: any) {
-    return this.eventsService.findDashboardEvents(user);
   }
 
   @Get(':id')
